@@ -17,6 +17,8 @@ const courierPartners = [
   { id: "dhl", name: "DHL", logo: "/placeholder.svg?height=80&width=120" },
   { id: "fedex", name: "FedEx", logo: "/placeholder.svg?height=80&width=120" },
   { id: "dtdc", name: "DTDC", logo: "/placeholder.svg?height=80&width=120" },
+  { id: "xpressbees", name: "xpressbees", logo: "/placeholder.svg?height=80&width=120" },
+  { id: "dhelivery", name: "dhelivery", logo: "/placeholder.svg?height=80&width=120" },
 ]
 
 export default function CourierPartnerStep({ formData, updateFormData, nextStep, prevStep }: CourierPartnerStepProps) {
