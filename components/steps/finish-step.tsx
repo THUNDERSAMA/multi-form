@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import type { FormData } from "../multi-step-form"
-
+import Invoice from "../ui/invoice"
 interface FinishStepProps {
   formData: FormData
   updateFormData: (data: Partial<FormData>) => void
@@ -54,7 +54,9 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
       reader.readAsDataURL(file)
     }
   }
-
+  
+    
+    // border-t border-dashed
   return (
     <div className="p-6 bg-white rounded-2xl shadow-md">
       <h3 className="text-xl font-semibold mb-4 text-blue-600">Step 7: Finish</h3>
@@ -163,7 +165,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
         </div>
 
         {submissionStatus?.success && (
-          <div className="mt-6">
+          <div className="flex justify-between mt-6">
             <button
               type="button"
               className="text-sm text-blue-700 underline hover:text-blue-900"
@@ -171,14 +173,16 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
             >
               Toggle JSON View
             </button>
-            <pre id="jsonToggle" className="mt-2 hidden bg-gray-100 p-4 rounded overflow-auto max-h-64 text-xs">
+            <Invoice formData={formData} />
+            {/* <pre id="jsonToggle" className="mt-2 hidden bg-gray-100 p-4 rounded overflow-auto max-h-64 text-xs">
               {JSON.stringify(
                 formData,
                 (key, value) => (value instanceof File ? { name: value.name, type: value.type, size: value.size } : value),
                 2
               )}
-            </pre>
+            </pre> */}
           </div>
+
         )}
       </form>
     </div>
