@@ -10,44 +10,42 @@ import FromAddressStep from "./steps/from-address-step"
 import FinishStep from "./steps/finish-step"
 import ProgressBar from "./progress-bar"
 
+export type Address = {
+  name: string
+  address: string
+  city: string
+  state: string
+  pincode: string
+  phone: string
+}
+
+export type CourierDetail = {
+  weight: string
+  length: string
+  width: string
+  height: string
+  description: string
+  trackingId: string
+  toAddress: Address
+  totalAmount: string
+  shippingMethod: "surface" | "express"
+  paymentMethod: "cod" | "prepaid"
+}
+
 export type FormData = {
   pincode: string
   courierPartner: string
   courierType: "parcel" | "document"
-  toAddress: {
-    name: string
-    address: string
-    city: string
-    state: string
-    pincode: string
-    phone: string
-  }
-  fromAddress: {
-    name: string
-    address: string
-    city: string
-    state: string
-    pincode: string
-    phone: string
-  }
-  courierDetails: {
-    weight: string
-    length: string
-    width: string
-    height: string
-    description: string
-  }
-  isConstantField: boolean
-  constantField: string
-  multipleCouriers: Array<{
-    weight: string
-    length: string
-    width: string
-    height: string
-    description: string
-  }>
+  toAddress: Address
+  fromAddress: Address
+  courierDetails: CourierDetail
+  constantFields: string[]
+  multipleCouriers: CourierDetail[]
   courierImage: File | null
   trackingId: string
+  totalAmount: string
+  shippingMethod: "surface" | "express"
+  paymentMethod: "cod" | "prepaid"
 }
 
 export default function MultiStepForm() {
@@ -78,12 +76,26 @@ export default function MultiStepForm() {
       width: "",
       height: "",
       description: "",
+      trackingId: "",
+      toAddress: {
+        name: "",
+        address: "",
+        city: "",
+        state: "",
+        pincode: "",
+        phone: "",
+      },
+      totalAmount: "",
+      shippingMethod: "surface",
+      paymentMethod: "cod",
     },
-    isConstantField: false,
-    constantField: "",
+    constantFields: [],
     multipleCouriers: [],
     courierImage: null,
     trackingId: "",
+    totalAmount: "",
+    shippingMethod: "surface",
+    paymentMethod: "cod",
   })
 
   const totalSteps = formData.courierType === "parcel" ? 7 : 7
