@@ -1,8 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef } from "react"
+import { motion } from "framer-motion"
 import type { FormData, CourierDetail, Address } from "../multi-step-form"
 
 interface CourierDetailsStepProps {
@@ -165,41 +165,52 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
   }
 
   return (
-    <div>
-      <h3 className="mb-3">Step 5: Courier Details</h3>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <h3 className="text-2xl font-semibold mb-6 text-gray-800">Courier Details</h3>
       <form onSubmit={handleSubmit}>
         {/* Tracking ID Field */}
-        <div className="mb-4">
-          <label htmlFor="trackingId" className="form-label">
+        <div className="mb-6">
+          <label htmlFor="trackingId" className="block text-sm font-medium text-gray-700 mb-2">
             Tracking ID
           </label>
-          <div className="input-group">
+          <div className="relative">
             <input
               type="text"
-              className="form-control"
+              className="w-full px-4 py-3 pr-10 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none transition-all duration-200 font-mono"
               id="trackingId"
               value={formData.trackingId}
               readOnly
               aria-describedby="trackingIdHelp"
             />
-            <span className="input-group-text">
-              <i className="bi bi-lock-fill"></i>
-            </span>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-gray-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
           </div>
-          <div id="trackingIdHelp" className="form-text">
+          <p id="trackingIdHelp" className="mt-2 text-sm text-gray-500">
             This unique tracking ID is automatically generated and cannot be edited.
-          </div>
+          </p>
         </div>
 
         {/* New Courier Detail Fields */}
-        <div className="row g-3 mb-4">
-          <div className="col-md-4">
-            <label htmlFor="totalAmount" className="form-label">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div>
+            <label htmlFor="totalAmount" className="block text-sm font-medium text-gray-700 mb-2">
               Total Amount (₹)
             </label>
             <input
               type="number"
-              className="form-control"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
               id="totalAmount"
               name="totalAmount"
               value={formData.totalAmount}
@@ -207,14 +218,15 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
               min="0"
               step="0.01"
               required
+              placeholder="Enter amount"
             />
           </div>
-          <div className="col-md-4">
-            <label htmlFor="shippingMethod" className="form-label">
+          <div>
+            <label htmlFor="shippingMethod" className="block text-sm font-medium text-gray-700 mb-2">
               Shipping Method
             </label>
             <select
-              className="form-select"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
               id="shippingMethod"
               name="shippingMethod"
               value={formData.shippingMethod}
@@ -225,12 +237,12 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
               <option value="express">Express</option>
             </select>
           </div>
-          <div className="col-md-4">
-            <label htmlFor="paymentMethod" className="form-label">
+          <div>
+            <label htmlFor="paymentMethod" className="block text-sm font-medium text-gray-700 mb-2">
               Payment Method
             </label>
             <select
-              className="form-select"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
               id="paymentMethod"
               name="paymentMethod"
               value={formData.paymentMethod}
@@ -244,205 +256,239 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
         </div>
 
         {formData.courierType === "document" && (
-          <div className="mb-4 p-3 border rounded">
-            <div className="mb-3">
-              <h5>Select Constant Fields</h5>
-              <p className="form-text">Select fields that will remain constant across multiple couriers</p>
+          <div className="mb-6 p-6 bg-gray-50 rounded-xl border border-gray-200">
+            <div className="mb-4">
+              <h5 className="font-medium text-lg text-gray-800 mb-3">Select Constant Fields</h5>
+              <p className="text-gray-600 mb-4">Select fields that will remain constant across multiple couriers</p>
 
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="constantWeight"
-                  value="weight"
-                  checked={formData.constantFields.includes("weight")}
-                  onChange={handleConstantFieldChange}
-                />
-                <label className="form-check-label" htmlFor="constantWeight">
-                  Weight
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
+                    value="weight"
+                    checked={formData.constantFields.includes("weight")}
+                    onChange={handleConstantFieldChange}
+                  />
+                  <span className="text-gray-700">Weight</span>
                 </label>
-              </div>
 
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="constantDimensions"
-                  value="dimensions"
-                  checked={formData.constantFields.includes("dimensions")}
-                  onChange={handleConstantFieldChange}
-                />
-                <label className="form-check-label" htmlFor="constantDimensions">
-                  Dimensions
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
+                    value="dimensions"
+                    checked={formData.constantFields.includes("dimensions")}
+                    onChange={handleConstantFieldChange}
+                  />
+                  <span className="text-gray-700">Dimensions</span>
                 </label>
-              </div>
 
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="constantDescription"
-                  value="description"
-                  checked={formData.constantFields.includes("description")}
-                  onChange={handleConstantFieldChange}
-                />
-                <label className="form-check-label" htmlFor="constantDescription">
-                  Description
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
+                    value="description"
+                    checked={formData.constantFields.includes("description")}
+                    onChange={handleConstantFieldChange}
+                  />
+                  <span className="text-gray-700">Description</span>
                 </label>
-              </div>
 
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="constantShippingMethod"
-                  value="shippingMethod"
-                  checked={formData.constantFields.includes("shippingMethod")}
-                  onChange={handleConstantFieldChange}
-                />
-                <label className="form-check-label" htmlFor="constantShippingMethod">
-                  Shipping Method
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
+                    value="shippingMethod"
+                    checked={formData.constantFields.includes("shippingMethod")}
+                    onChange={handleConstantFieldChange}
+                  />
+                  <span className="text-gray-700">Shipping Method</span>
                 </label>
-              </div>
 
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="constantPaymentMethod"
-                  value="paymentMethod"
-                  checked={formData.constantFields.includes("paymentMethod")}
-                  onChange={handleConstantFieldChange}
-                />
-                <label className="form-check-label" htmlFor="constantPaymentMethod">
-                  Payment Method
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
+                    value="paymentMethod"
+                    checked={formData.constantFields.includes("paymentMethod")}
+                    onChange={handleConstantFieldChange}
+                  />
+                  <span className="text-gray-700">Payment Method</span>
                 </label>
               </div>
             </div>
 
             {formData.constantFields.length > 0 && (
               <>
-                <div className="mb-3">
-                  <button type="button" className="btn btn-outline-primary" onClick={addCourier}>
-                    <i className="bi bi-plus-circle me-2"></i>Add Another Courier
-                  </button>
+                <div className="mb-4">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    className="px-4 py-2 bg-indigo-50 text-indigo-600 font-medium rounded-lg hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all duration-200 flex items-center"
+                    onClick={addCourier}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Add Another Courier
+                  </motion.button>
                 </div>
 
                 {multiCouriers.length > 0 && (
-                  <div className="mb-3">
-                    <h5>Multiple Couriers</h5>
+                  <div className="space-y-4">
+                    <h5 className="font-medium text-lg text-gray-800">Multiple Couriers</h5>
                     {multiCouriers.map((courier, index) => (
-                      <div key={index} className="card mb-3">
-                        <div className="card-header d-flex justify-content-between align-items-center">
-                          <span>Courier #{index + 1}</span>
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm"
+                      >
+                        <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-b border-gray-200">
+                          <h6 className="font-medium text-gray-700">Courier #{index + 1}</h6>
                           <button
                             type="button"
-                            className="btn btn-sm btn-outline-danger"
+                            className="p-1 text-red-500 hover:text-red-700 focus:outline-none"
                             onClick={() => removeCourier(index)}
                           >
-                            <i className="bi bi-trash"></i>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
                           </button>
                         </div>
-                        <div className="card-body">
+                        <div className="p-4">
                           {/* Tracking ID for this courier */}
-                          <div className="mb-3">
-                            <label className="form-label">Tracking ID</label>
-                            <input type="text" className="form-control" value={courier.trackingId} readOnly />
+                          <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Tracking ID</label>
+                            <input
+                              type="text"
+                              className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none transition-all duration-200 font-mono"
+                              value={courier.trackingId}
+                              readOnly
+                            />
                           </div>
 
                           {/* To Address for this courier */}
-                          <div className="mb-3">
-                            <h6>Recipient Address</h6>
-                            <div className="row g-2">
-                              <div className="col-md-6">
-                                <label className="form-label">Name</label>
+                          <div className="mb-4">
+                            <h6 className="font-medium text-gray-700 mb-3">Recipient Address</h6>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                                 <input
                                   type="text"
-                                  className="form-control"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.toAddress.name}
                                   onChange={(e) => updateCourierAddress(index, "name", e.target.value)}
                                   required
+                                  placeholder="Recipient name"
                                 />
                               </div>
-                              <div className="col-md-6">
-                                <label className="form-label">Phone</label>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                                 <input
                                   type="tel"
-                                  className="form-control"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.toAddress.phone}
                                   onChange={(e) => updateCourierAddress(index, "phone", e.target.value)}
                                   required
+                                  placeholder="Phone number"
                                 />
                               </div>
-                              <div className="col-12">
-                                <label className="form-label">Address</label>
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                                 <input
                                   type="text"
-                                  className="form-control"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.toAddress.address}
                                   onChange={(e) => updateCourierAddress(index, "address", e.target.value)}
                                   required
+                                  placeholder="Street address"
                                 />
                               </div>
-                              <div className="col-md-4">
-                                <label className="form-label">City</label>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
                                 <input
                                   type="text"
-                                  className="form-control"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.toAddress.city}
                                   onChange={(e) => updateCourierAddress(index, "city", e.target.value)}
                                   required
+                                  placeholder="City"
                                 />
                               </div>
-                              <div className="col-md-4">
-                                <label className="form-label">State</label>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
                                 <input
                                   type="text"
-                                  className="form-control"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.toAddress.state}
                                   onChange={(e) => updateCourierAddress(index, "state", e.target.value)}
                                   required
+                                  placeholder="State"
                                 />
                               </div>
-                              <div className="col-md-4">
-                                <label className="form-label">Pincode</label>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
                                 <input
                                   type="text"
-                                  className="form-control"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.toAddress.pincode}
                                   onChange={(e) => updateCourierAddress(index, "pincode", e.target.value)}
                                   required
                                   pattern="[0-9]{6}"
                                   maxLength={6}
+                                  placeholder="6-digit pincode"
                                 />
                               </div>
                             </div>
                           </div>
 
-                          <div className="row g-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {!formData.constantFields.includes("weight") && (
-                              <div className="col-md-6">
-                                <label className="form-label">Weight (kg)</label>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
                                 <input
                                   type="number"
-                                  className="form-control"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.weight}
                                   onChange={(e) => updateCourier(index, "weight", e.target.value)}
                                   step="0.01"
                                   min="0"
                                   required
+                                  placeholder="Weight"
                                 />
                               </div>
                             )}
 
                             {!formData.constantFields.includes("dimensions") && (
-                              <div className="col-md-6">
-                                <label className="form-label">Dimensions (cm)</label>
-                                <div className="input-group">
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Dimensions (cm)</label>
+                                <div className="grid grid-cols-3 gap-2">
                                   <input
                                     type="number"
-                                    className="form-control"
-                                    placeholder="L"
+                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                                    placeholder="Length"
                                     value={courier.length}
                                     onChange={(e) => updateCourier(index, "length", e.target.value)}
                                     min="0"
@@ -450,8 +496,8 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                                   />
                                   <input
                                     type="number"
-                                    className="form-control"
-                                    placeholder="W"
+                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                                    placeholder="Width"
                                     value={courier.width}
                                     onChange={(e) => updateCourier(index, "width", e.target.value)}
                                     min="0"
@@ -459,8 +505,8 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                                   />
                                   <input
                                     type="number"
-                                    className="form-control"
-                                    placeholder="H"
+                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                                    placeholder="Height"
                                     value={courier.height}
                                     onChange={(e) => updateCourier(index, "height", e.target.value)}
                                     min="0"
@@ -471,35 +517,37 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                             )}
 
                             {!formData.constantFields.includes("description") && (
-                              <div className="col-12">
-                                <label className="form-label">Description</label>
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                                 <textarea
-                                  className="form-control"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.description}
                                   onChange={(e) => updateCourier(index, "description", e.target.value)}
                                   rows={2}
+                                  placeholder="Item description"
                                 ></textarea>
                               </div>
                             )}
 
-                            <div className="col-md-4">
-                              <label className="form-label">Total Amount (₹)</label>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount (₹)</label>
                               <input
                                 type="number"
-                                className="form-control"
+                                className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                 value={courier.totalAmount}
                                 onChange={(e) => updateCourier(index, "totalAmount", e.target.value)}
                                 min="0"
                                 step="0.01"
                                 required
+                                placeholder="Amount"
                               />
                             </div>
 
                             {!formData.constantFields.includes("shippingMethod") && (
-                              <div className="col-md-4">
-                                <label className="form-label">Shipping Method</label>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Shipping Method</label>
                                 <select
-                                  className="form-select"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.shippingMethod}
                                   onChange={(e) =>
                                     updateCourier(index, "shippingMethod", e.target.value as "surface" | "express")
@@ -513,24 +561,24 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                             )}
 
                             {!formData.constantFields.includes("paymentMethod") && (
-                              <div className="col-md-4">
-                                <label className="form-label">Payment Method</label>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
                                 <select
-                                  className="form-select"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.paymentMethod}
                                   onChange={(e) =>
                                     updateCourier(index, "paymentMethod", e.target.value as "cod" | "prepaid")
                                   }
                                   required
                                 >
-                                  <option value="cod">COD</option>
+                                  <option value="cod">Cash on Delivery</option>
                                   <option value="prepaid">Prepaid</option>
                                 </select>
                               </div>
                             )}
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 )}
@@ -540,14 +588,14 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
         )}
 
         {(formData.constantFields.length === 0 || formData.courierType === "parcel") && (
-          <div className="row g-3">
-            <div className="col-md-6">
-              <label htmlFor="weight" className="form-label">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label htmlFor="weight" className="block text-sm font-medium text-gray-700 mb-2">
                 Weight (kg)
               </label>
               <input
                 type="number"
-                className="form-control"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                 id="weight"
                 name="weight"
                 value={formData.courierDetails.weight}
@@ -555,16 +603,17 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                 step="0.01"
                 min="0"
                 required
+                placeholder="Enter weight"
               />
             </div>
-            <div className="col-md-6">
-              <label htmlFor="dimensions" className="form-label">
+            <div className="md:col-span-2">
+              <label htmlFor="dimensions" className="block text-sm font-medium text-gray-700 mb-2">
                 Dimensions (cm)
               </label>
-              <div className="input-group">
+              <div className="grid grid-cols-3 gap-3">
                 <input
                   type="number"
-                  className="form-control"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                   placeholder="Length"
                   id="length"
                   name="length"
@@ -575,7 +624,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                 />
                 <input
                   type="number"
-                  className="form-control"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                   placeholder="Width"
                   id="width"
                   name="width"
@@ -586,7 +635,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                 />
                 <input
                   type="number"
-                  className="form-control"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                   placeholder="Height"
                   id="height"
                   name="height"
@@ -597,32 +646,44 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                 />
               </div>
             </div>
-            <div className="col-12">
-              <label htmlFor="description" className="form-label">
+            <div className="md:col-span-2">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                 Description
               </label>
               <textarea
-                className="form-control"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                 id="description"
                 name="description"
                 value={formData.courierDetails.description}
                 onChange={handleChange}
                 rows={3}
+                placeholder="Describe the contents of your courier"
               ></textarea>
             </div>
           </div>
         )}
 
-        <div className="d-flex justify-content-between mt-4">
-          <button type="button" className="btn btn-secondary" onClick={prevStep}>
+        <div className="flex justify-between">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="button"
+            className="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition-all duration-200"
+            onClick={prevStep}
+          >
             Previous
-          </button>
-          <button type="submit" className="btn btn-primary">
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all duration-200"
+          >
             Next
-          </button>
+          </motion.button>
         </div>
       </form>
-    </div>
+    </motion.div>
   )
 }
 

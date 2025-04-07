@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { motion } from "framer-motion"
 import type { FormData } from "../multi-step-form"
 
 interface CourierTypeStepProps {
@@ -18,65 +18,122 @@ export default function CourierTypeStep({ formData, updateFormData, nextStep, pr
   }
 
   return (
-    <div>
-      <h3 className="mb-3">Step 3: Choose Courier Type</h3>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <h3 className="text-2xl font-semibold mb-6 text-gray-800">Choose Courier Type</h3>
       <form onSubmit={handleSubmit}>
-        <div className="row row-cols-1 row-cols-md-2 g-4 mb-4">
-          <div className="col">
-            <div
-              className={`card h-100 ${formData.courierType === "parcel" ? "border-primary" : ""}`}
-              onClick={() => updateFormData({ courierType: "parcel" })}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="card-body text-center p-4">
-                <div className="mb-3">
-                  <i className="bi bi-box-seam fs-1"></i>
-                </div>
-                <h5 className="card-title">Parcel</h5>
-                <p className="card-text">Send packages, goods, or physical items</p>
-                {formData.courierType === "parcel" && (
-                  <div className="position-absolute top-0 end-0 p-2">
-                    <span className="badge bg-primary rounded-pill">
-                      <i className="bi bi-check-lg"></i>
-                    </span>
-                  </div>
-                )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`bg-white rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
+              formData.courierType === "parcel"
+                ? "border-2 border-indigo-500 shadow-md"
+                : "border border-gray-200 hover:shadow-md"
+            }`}
+            onClick={() => updateFormData({ courierType: "parcel" })}
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 flex items-center justify-center bg-indigo-100 text-indigo-600 rounded-full mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+                  />
+                </svg>
               </div>
-            </div>
-          </div>
-          <div className="col">
-            <div
-              className={`card h-100 ${formData.courierType === "document" ? "border-primary" : ""}`}
-              onClick={() => updateFormData({ courierType: "document" })}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="card-body text-center p-4">
-                <div className="mb-3">
-                  <i className="bi bi-file-earmark-text fs-1"></i>
+              <h5 className="font-medium text-lg text-gray-800 mb-2">Parcel</h5>
+              <p className="text-gray-600">Send packages, goods, or physical items</p>
+              {formData.courierType === "parcel" && (
+                <div className="absolute top-3 right-3">
+                  <span className="flex items-center justify-center w-6 h-6 bg-indigo-500 text-white rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
                 </div>
-                <h5 className="card-title">Document</h5>
-                <p className="card-text">Send letters, documents, or paperwork</p>
-                {formData.courierType === "document" && (
-                  <div className="position-absolute top-0 end-0 p-2">
-                    <span className="badge bg-primary rounded-pill">
-                      <i className="bi bi-check-lg"></i>
-                    </span>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
-          </div>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`bg-white rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
+              formData.courierType === "document"
+                ? "border-2 border-indigo-500 shadow-md"
+                : "border border-gray-200 hover:shadow-md"
+            }`}
+            onClick={() => updateFormData({ courierType: "document" })}
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 flex items-center justify-center bg-indigo-100 text-indigo-600 rounded-full mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <h5 className="font-medium text-lg text-gray-800 mb-2">Document</h5>
+              <p className="text-gray-600">Send letters, documents, or paperwork</p>
+              {formData.courierType === "document" && (
+                <div className="absolute top-3 right-3">
+                  <span className="flex items-center justify-center w-6 h-6 bg-indigo-500 text-white rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              )}
+            </div>
+          </motion.div>
         </div>
-        <div className="d-flex justify-content-between">
-          <button type="button" className="btn btn-secondary" onClick={prevStep}>
+
+        <div className="flex justify-between">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="button"
+            className="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition-all duration-200"
+            onClick={prevStep}
+          >
             Previous
-          </button>
-          <button type="submit" className="btn btn-primary">
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all duration-200"
+          >
             Next
-          </button>
+          </motion.button>
         </div>
       </form>
-    </div>
+    </motion.div>
   )
 }
 

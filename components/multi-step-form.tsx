@@ -164,10 +164,10 @@ export default function MultiStepForm() {
   }
 
   return (
-    <div className="card shadow-sm">
-      <div className="card-body">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+      <div className="p-6 md:p-8">
         <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
-        {renderStep()}
+        <div className="transition-opacity duration-300">{renderStep()}</div>
       </div>
     </div>
   )
