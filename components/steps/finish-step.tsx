@@ -48,14 +48,19 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      updateFormData({ courierImage: file })
+
+      //updateFormData({ courierImage: file })
       const reader = new FileReader()
       reader.onloadend = () => setImagePreview(reader.result as string)
       reader.readAsDataURL(file)
+      reader.onload = () => {
+        updateFormData({ courierImage: reader.result as string })
+        //console.log("Image preview:", reader.result)
+      }
     }
   }
-  
-    
+  const dataVal = formData;
+  const multiParcel=dataVal && dataVal.multipleCouriers && dataVal.multipleCouriers.length > 0
     // border-t border-dashed
   return (
     <div className="p-6 bg-white rounded-2xl shadow-md">
@@ -89,8 +94,11 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
             </div>
           )}
         </div>
-
-        <div className="bg-blue-50 rounded-xl p-4">
+        {/* check courier type for summary */}
+        {/* Serialize formData for debugging or other purposes */}
+        {}
+        {formData.courierType === "parcel" ?
+       ( <div className="bg-blue-50 rounded-xl p-4">
           <h4 className="text-lg font-semibold text-blue-700 mb-2">Order Summary</h4>
           <div className="space-y-4">
             {/* Basic Details */}
@@ -153,8 +161,109 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
               </div>
             </div>
           </div>
+        </div>)
+        : multiParcel?
+(<div className="bg-blue-50 rounded-xl p-4">
+  <h4 className="text-lg font-semibold text-blue-700 mb-2">Order Summary</h4>
+<dl className="max-w-md text-gray-900 divide-y divide-gray-200 dark:text-white dark:divide-gray-700">
+{dataVal.multipleCouriers.map((courier, index) => (
+<div className="flex flex-col pb-3" key={index}>
+  
+<h3 className="font-mono font-semibold">Document {index + 1}</h3>
+          
+          <div className="space-y-4">
+            {/* Basic Details */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <span className="block text-sm font-medium text-gray-600">Tracking ID</span>
+                <p className="text-gray-800 font-mono">{courier.trackingId}</p>
+              </div>
+              
+            </div>
+            {/* Address Details */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              <div>
+                <h5 className="text-sm font-semibold text-gray-700">To</h5>
+                <address className="text-gray-600 text-sm">
+                  {courier.toAddress.name}<br />
+                  {courier.toAddress.address}<br />
+                  {courier.toAddress.city}, {courier.toAddress.state} - {courier.toAddress.pincode}<br />
+                  Phone: {courier.toAddress.phone}
+                </address>
+              </div>
+            </div>
+          </div>
+        
         </div>
+        )
+      )}
+        </dl>
+        </div>): ( <div className="bg-blue-50 rounded-xl p-4">
+          <h4 className="text-lg font-semibold text-blue-700 mb-2">Order Summary</h4>
+          <div className="space-y-4">
+            {/* Basic Details */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <span className="block text-sm font-medium text-gray-600">Tracking ID</span>
+                <p className="text-gray-800 font-mono">{formData.trackingId}</p>
+              </div>
+              <div>
+                <span className="block text-sm font-medium text-gray-600">Courier Partner</span>
+                <p className="text-gray-800">{formData.courierPartner}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <span className="block text-sm font-medium text-gray-600">Courier Type</span>
+                <p className="text-gray-800">{formData.courierType}</p>
+              </div>
+              <div>
+                <span className="block text-sm font-medium text-gray-600">Shipping Method</span>
+                <p className="text-gray-800">{formData.shippingMethod}</p>
+              </div>
+              <div>
+                <span className="block text-sm font-medium text-gray-600">Payment Method</span>
+                <p className="text-gray-800">{formData.paymentMethod}</p>
+              </div>
+            </div>
 
+            {/* Address Details */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <h5 className="text-sm font-semibold text-gray-700">From</h5>
+                <address className="text-gray-600 text-sm">
+                  {formData.fromAddress.name}<br />
+                  {formData.fromAddress.address}<br />
+                  {formData.fromAddress.city}, {formData.fromAddress.state} - {formData.fromAddress.pincode}<br />
+                  Phone: {formData.fromAddress.phone}
+                </address>
+              </div>
+              <div>
+                <h5 className="text-sm font-semibold text-gray-700">To</h5>
+                <address className="text-gray-600 text-sm">
+                  {formData.toAddress.name}<br />
+                  {formData.toAddress.address}<br />
+                  {formData.toAddress.city}, {formData.toAddress.state} - {formData.toAddress.pincode}<br />
+                  Phone: {formData.toAddress.phone}
+                </address>
+              </div>
+            </div>
+
+            {/* Courier Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <p><span className="font-medium">Weight:</span> {formData.courierDetails.weight} kg</p>
+                <p><span className="font-medium">Dimensions:</span> {formData.courierDetails.length} × {formData.courierDetails.width} × {formData.courierDetails.height} cm</p>
+              </div>
+              <div>
+                <p><span className="font-medium">Description:</span> {formData.courierDetails.description || "N/A"}</p>
+                <p><span className="font-medium">Total Amount:</span> ₹{formData.totalAmount}</p>
+              </div>
+            </div>
+          </div>
+        </div>)
+        }
         <div className="flex justify-between mt-6">
           <button type="button" onClick={prevStep} className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
             Previous

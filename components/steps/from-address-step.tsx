@@ -14,6 +14,7 @@ interface FromAddressStepProps {
 export default function FromAddressStep({ formData, updateFormData, nextStep, prevStep }: FromAddressStepProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    console.log("Form in last stage from here prices should be fetched:");
     nextStep()
   }
 

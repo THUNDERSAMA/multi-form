@@ -41,7 +41,7 @@ export type FormData = {
   courierDetails: CourierDetail
   constantFields: string[]
   multipleCouriers: CourierDetail[]
-  courierImage: File | null
+  courierImage: string
   trackingId: string
   totalAmount: string
   shippingMethod: "surface" | "express"
@@ -91,7 +91,7 @@ export default function MultiStepForm() {
     },
     constantFields: [],
     multipleCouriers: [],
-    courierImage: null,
+    courierImage: "",
     trackingId: "",
     totalAmount: "",
     shippingMethod: "surface",
