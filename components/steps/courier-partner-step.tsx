@@ -18,25 +18,27 @@ const courierPartners = [
   { id: "elegant_courier", name: "Elegant_courier", logo: "/elegant.jpg?height=80&width=120" },
   { id: "elegant_enterprise", name: "Elegant_enterprise", logo: "/enterprise.png?height=80&width=120" },
 ]
-const [courierPartnersData,setCourierPartners] = useState(courierPartners)
+
 // Sample courier partners data
 
 //get courier partners from API which give service to pincode
-useEffect(() => {
-  const getCourierPartners = async () => {
-    try {
-      const response = await fetch("/api/courier-partners")
-      const data = await response.json()
-      const filteredPartners = courierPartnersData.filter((courierPartnersData) => JSON.parse(data).includes(courierPartnersData.name));
-      setCourierPartners(filteredPartners)
-    } catch (error) {
-      console.error("Error fetching courier partners:", error)
-    }
-  }
-  getCourierPartners()
-}
-  , [])
+
 export default function CourierPartnerStep({ formData, updateFormData, nextStep, prevStep }: CourierPartnerStepProps) {
+  const [courierPartnersData,setCourierPartners] = useState(courierPartners || [])
+  useEffect(() => {
+    const getCourierPartners = async () => {
+      try {
+        const response = await fetch("/api/courier-partners")
+        const data = await response.json()
+        const filteredPartners = courierPartnersData.filter((courierPartnersData) => JSON.parse(data).includes(courierPartnersData.name));
+        setCourierPartners(filteredPartners)
+      } catch (error) {
+        console.error("Error fetching courier partners:", error)
+      }
+    }
+    getCourierPartners()
+  }
+    , [])
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.courierPartner) {
