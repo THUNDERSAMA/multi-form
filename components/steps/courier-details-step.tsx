@@ -100,6 +100,8 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
         pincode: "",
         phone: "",
       },
+      waybill: "",
+      quantity: "",
       totalAmount: "",
       shippingMethod: "surface",
       paymentMethod: "cod",
@@ -219,6 +221,37 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
               step="0.01"
               required
               placeholder="Enter amount"
+            />
+          </div>
+          <div>
+            <label htmlFor="Waybill" className="block text-sm font-medium text-gray-700 mb-2">
+              Waybill
+            </label>
+            <input
+              type="text"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              id="Waybill"
+              name="waybill"
+              value={formData.waybill}
+              onChange={handleChange}
+              placeholder="Enter waybill number"
+            />
+          </div>
+          <div>
+            <label htmlFor="Quantity" className="block text-sm font-medium text-gray-700 mb-2">
+              Quantity
+            </label>
+            <input
+              type="number"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              id="quantity"
+              name="quantity"
+              value={formData.quantity}
+              onChange={handleChange}
+              min="1"
+              step="1"
+              required
+              placeholder="Enter quantity"
             />
           </div>
           <div>
@@ -480,7 +513,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                                 />
                               </div>
                             )}
-
+                            
                             {!formData.constantFields.includes("dimensions") && (
                               <div className="md:col-span-2">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Dimensions (cm)</label>

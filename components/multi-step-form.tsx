@@ -22,6 +22,8 @@ export type Address = {
 export type CourierDetail = {
   weight: string
   length: string
+  waybill: string
+  quantity: string
   width: string
   height: string
   description: string
@@ -43,6 +45,8 @@ export type FormData = {
   multipleCouriers: CourierDetail[]
   courierImage: string
   trackingId: string
+  waybill: string,
+  quantity: string,
   totalAmount: string
   shippingMethod: "surface" | "express"
   paymentMethod: "cod" | "prepaid"
@@ -77,6 +81,8 @@ export default function MultiStepForm() {
       height: "",
       description: "",
       trackingId: "",
+      waybill: "",
+      quantity: "",
       toAddress: {
         name: "",
         address: "",
@@ -85,6 +91,7 @@ export default function MultiStepForm() {
         pincode: "",
         phone: "",
       },
+      
       totalAmount: "",
       shippingMethod: "surface",
       paymentMethod: "cod",
@@ -94,6 +101,8 @@ export default function MultiStepForm() {
     courierImage: "",
     trackingId: "",
     totalAmount: "",
+    waybill: "",
+    quantity: "",
     shippingMethod: "surface",
     paymentMethod: "cod",
   })

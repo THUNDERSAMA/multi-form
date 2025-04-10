@@ -3,6 +3,7 @@
 import type React from "react"
 import { motion } from "framer-motion"
 import type { FormData } from "../multi-step-form"
+import { useEffect, useState } from "react"
 
 interface CourierPartnerStepProps {
   formData: FormData
@@ -10,15 +11,31 @@ interface CourierPartnerStepProps {
   nextStep: () => void
   prevStep: () => void
 }
-
-// Sample courier partners data
 const courierPartners = [
-  { id: "bluedart", name: "Blue Dart", logo: "/placeholder.svg?height=80&width=120" },
-  { id: "dhl", name: "DHL", logo: "/placeholder.svg?height=80&width=120" },
-  { id: "fedex", name: "FedEx", logo: "/placeholder.svg?height=80&width=120" },
-  { id: "dtdc", name: "DTDC", logo: "/placeholder.svg?height=80&width=120" },
+  { id: "xpressbees", name: "Xpressbees", logo: "/xpressbees.avif?height=80&width=120" },
+  { id: "dhelivery", name: "Dhelivery", logo: "/Delhivery.jpg?height=80&width=120" },
+  { id: "dtdc", name: "Dtdc", logo: "/dtdc.jpg?height=80&width=120" },
+  { id: "elegant_courier", name: "Elegant_courier", logo: "/elegant.jpg?height=80&width=120" },
+  { id: "elegant_enterprise", name: "Elegant_enterprise", logo: "/enterprise.png?height=80&width=120" },
 ]
+const [courierPartnersData,setCourierPartners] = useState(courierPartners)
+// Sample courier partners data
 
+//get courier partners from API which give service to pincode
+useEffect(() => {
+  const getCourierPartners = async () => {
+    try {
+      const response = await fetch("/api/courier-partners")
+      const data = await response.json()
+      const filteredPartners = courierPartnersData.filter((courierPartnersData) => JSON.parse(data).includes(courierPartnersData.name));
+      setCourierPartners(filteredPartners)
+    } catch (error) {
+      console.error("Error fetching courier partners:", error)
+    }
+  }
+  getCourierPartners()
+}
+  , [])
 export default function CourierPartnerStep({ formData, updateFormData, nextStep, prevStep }: CourierPartnerStepProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
