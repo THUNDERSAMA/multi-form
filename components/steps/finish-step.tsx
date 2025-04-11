@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import type { FormData } from "../multi-step-form"
-import Invoice from "../ui/invoice"
+import Invoice from "../multiform_ui/invoice"
 interface FinishStepProps {
   formData: FormData
   updateFormData: (data: Partial<FormData>) => void

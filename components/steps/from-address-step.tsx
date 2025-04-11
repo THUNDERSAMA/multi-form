@@ -65,7 +65,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
             />
           </div>
 
-          <div>
+          <div className="col-span-2">
             <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
               City
             </label>
@@ -81,7 +81,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
             />
           </div>
 
-          <div>
+          <div className="col-span-2">
             <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
               State
             </label>
@@ -97,7 +97,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
             />
           </div>
 
-          <div>
+          <div className="col-span-2">
             <label htmlFor="pincode" className="block text-sm font-medium text-gray-700 mb-2">
               Pincode
             </label>
@@ -115,7 +115,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
             />
           </div>
 
-          <div>
+          <div className="col-span-2">
             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
               Phone Number
             </label>
