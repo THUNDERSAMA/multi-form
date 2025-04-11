@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next"
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Quantum Courier",
+    name: "courierWallah",
     short_name: "QuantumCourier",
     description: "Next-generation courier service with lightning-fast deliveries",
     start_url: "/",

@@ -18,6 +18,7 @@ import { motion } from "framer-motion"
 import { ArrowRight, Rocket, Shield, Truck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import Image from 'next/image'
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -191,7 +192,7 @@ export default function Home() {
           <div className="flex flex-col items-center text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Ready to Ship?</h2>
             <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-              Get started with Quantum Courier today and experience the future of delivery.
+              Get started with courierWallah today and experience the future of delivery.
             </p>
             <Button asChild size="lg" className="mt-8">
               <Link href="/book" className="flex items-center gap-2">
@@ -201,6 +202,68 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <section className="bg-white dark:bg-gray-900">
+    <div className="py-8 lg:py-16 mx-auto max-w-screen-xl px-4">
+        <h2 className="mb-8 lg:mb-16 text-3xl font-extrabold tracking-tight leading-tight text-center text-gray-900 dark:text-white md:text-4xl">You name it and we work with them</h2>
+        <div className="grid grid-cols-2 gap-8 text-gray-500 sm:gap-12 md:grid-cols-3 lg:grid-cols-6 dark:text-gray-400">
+            <a href="#" className="flex justify-center items-center">
+            <Image
+            className="h-9 hover:text-gray-900 dark:hover:text-white"
+        src="/dtdc.jpg"
+        width={500}
+        height={500}
+        alt="Picture of the courier"
+      />                     
+            </a>
+            <a href="#" className="flex justify-center items-center">
+            <Image
+            className="h-9 hover:text-gray-900 dark:hover:text-white"
+        src="/Delhivery.jpg"
+        width={500}
+        height={500}
+        alt="Picture of the courier"
+      />                                                    
+            </a>
+            <a href="#" className="flex justify-center items-center">
+            <Image
+            className="h-9 hover:text-gray-900 dark:hover:text-white"
+        src="/xpressbees.avif"
+        width={500}
+        height={500}
+        alt="Picture of the courier"
+      />                                                                      
+            </a>
+
+            <a href="#" className="flex justify-center items-center">
+            <Image
+            className="h-9 hover:text-gray-900 dark:hover:text-white"
+        src="/bluedart.png"
+        width={500}
+        height={500}
+        alt="Picture of the courier"
+      />                                                                                         
+            </a>
+            <a href="#" className="flex justify-center items-center">
+            <Image
+            className="h-9 hover:text-gray-900 dark:hover:text-white"
+        src="/fedex.png"
+        width={500}
+        height={500}
+        alt="Picture of the courier"
+      />                                                                                    
+            </a>
+            <a href="#" className="flex justify-center items-center">
+            <Image
+            className="h-9 hover:text-gray-900 dark:hover:text-white"
+        src="/dhl.jpg"
+        width={500}
+        height={500}
+        alt="Picture of the courier"
+      />                                                                                      
+            </a>
+        </div>
+    </div>
+</section>
     </div>
   )
 }

@@ -40,13 +40,13 @@ export const viewport = {
   themeColor: '#000000',
 };
 export const metadata: Metadata = {
-  title: "Quantum Courier - Fast Futuristic Delivery",
+  title: "courierWallah - Fast Futuristic Delivery",
   description: "Next-generation courier service with lightning-fast deliveries",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Quantum Courier",
+    title: "courierWallah",
   },
 }
 

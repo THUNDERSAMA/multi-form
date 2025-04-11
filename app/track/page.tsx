@@ -61,7 +61,7 @@ export default function TrackPage() {
             {
               date: "April 10, 2025 - 10:45 AM",
               status: "Package Received",
-              location: "Quantum Courier Facility, Boston",
+              location: "courierWallah Facility, Boston",
             },
           ],
         })

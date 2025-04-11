@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="flex flex-col space-y-4">
             <Link href="/" className="flex items-center space-x-2">
               <Package className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">Quantum Courier</span>
+              <span className="text-xl font-bold">courierWallah</span>
             </Link>
             <p className="text-sm text-muted-foreground">
               Next-generation courier service with lightning-fast deliveries
@@ -87,7 +87,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Quantum Courier. All rights reserved.
+          &copy; {new Date().getFullYear()} courierWallah. All rights reserved.
         </div>
       </div>
     </footer>

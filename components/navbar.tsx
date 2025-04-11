@@ -23,7 +23,7 @@ export default function Navbar() {
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <Package className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold">Quantum Courier</span>
+          <span className="text-xl font-bold">courierWallah</span>
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">
