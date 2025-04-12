@@ -9,6 +9,8 @@ import { motion } from "framer-motion"
 import { FileText, Home, LogOut, Menu, Package, PackageSearch, Settings, Truck, User, X } from "lucide-react"
 import { Button } from "@/components/multiform_ui/button"
 import { cn } from "@/lib/utils"
+import Cookies from 'js-cookie'
+import { useRouter } from 'next/navigation'
 
 interface NavItem {
   title: string
@@ -43,7 +45,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname()
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
-
+ const router = useRouter()
+   useEffect(() => {
+     const token = Cookies.get('token')
+ 
+     if (!token) {
+       router.replace('/') // If no token is found, redirect to login page
+       return
+     }
+ 
+     // Validate the token by making an API call
+     const validateToken = async () => {
+       try {
+         const res = await fetch('/api/verify', {
+           headers: {
+             Authorization: `Bearer ${token}`,
+           },
+         })
+ 
+         if (!res.ok) throw new Error('Token validation failed')
+       } catch (error) {
+         console.error(error)
+         router.replace('/') // Redirect to login if token validation fails
+       }
+     }
+ 
+     validateToken()
+   }, [router])
   useEffect(() => {
     setIsMounted(true)
   }, [])

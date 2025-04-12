@@ -31,15 +31,35 @@ export default function LoginPage() {
     setIsLoading(true)
 
     // Simulate authentication
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsLoading(false)
-
-      // Demo credentials for testing
-      if (email === "admin@quantum.com" && password === "password") {
-        router.push("/dashboard")
-      } else {
-        setError("Invalid email or password")
+       //check if the email and password are correct
+       try {
+        const response = await fetch('/api/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        })
+  
+        if (!response.ok) setError("Invalid email or password")
+  
+        const { token } = await response.json()
+        document.cookie = `token=${token}; path=/`
+        router.push('/dashboard')
+      } catch (error) {
+        console.error(error)
       }
+      // // Demo credentials for testing
+      // if (email === "admin@quantum.com" && password === "password") {
+      //   router.push("/dashboard")
+      // } else {
+      //   setError("Invalid email or password")
+      // }
     }, 1500)
   }
 

@@ -1,10 +1,10 @@
 "use client"
-
+import Cookies from 'js-cookie'
 import { useEffect, useState } from "react"
 import { ArrowDown, ArrowUp, BarChart3, Box, Clock, Package, PackageCheck, Truck, Users } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/multiform_ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/multiform_ui/tabs"
-
+import { useRouter } from 'next/navigation'
 // Mock data for charts
 const dailyDeliveries = [18, 25, 32, 28, 36, 30, 42]
 const weeklyDeliveries = [145, 132, 164, 187, 203, 178, 196]
@@ -12,6 +12,7 @@ const monthlyDeliveries = [580, 620, 750, 690, 730, 810, 860]
 
 export default function DashboardPage() {
   const [mounted, setMounted] = useState(false)
+  
 
   useEffect(() => {
     setMounted(true)
