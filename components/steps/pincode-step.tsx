@@ -21,7 +21,7 @@ export default function PincodeStep({ formData, updateFormData, nextStep }: Pinc
       <h3 className="text-2xl font-semibold mb-6 text-gray-800">Enter Pincode</h3>
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
-          <label htmlFor="pincode" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="pincode" className="block text-sm font-medium text-gray-700 mb-2 dark:text-gray-50">
             Pincode
           </label>
           <input
@@ -35,7 +35,7 @@ export default function PincodeStep({ formData, updateFormData, nextStep }: Pinc
             maxLength={6}
             placeholder="Enter 6-digit pincode"
           />
-          <p className="mt-2 text-sm text-gray-500">Please enter a valid 6-digit pincode</p>
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-50">Please enter a valid 6-digit pincode</p>
         </div>
         <div className="flex justify-end">
           <motion.button

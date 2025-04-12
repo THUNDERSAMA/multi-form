@@ -21,7 +21,7 @@ export async function POST(req: { json: () => any }) {
     throw new Error('JWT_SECRET is not defined in environment variables')
   }
   const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-    expiresIn: '1m', // Token expiration time
-  })
+    expiresIn: '1y' 
+    })
   return NextResponse.json({ token })
 }

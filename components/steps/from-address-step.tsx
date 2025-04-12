@@ -34,7 +34,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="col-span-2">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="name" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               Full Name
             </label>
             <input
@@ -50,7 +50,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
           </div>
 
           <div className="col-span-2">
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="address" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               Address
             </label>
             <input
@@ -66,7 +66,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
           </div>
 
           <div className="col-span-2">
-            <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="city" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               City
             </label>
             <input
@@ -82,7 +82,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
           </div>
 
           <div className="col-span-2">
-            <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="state" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               State
             </label>
             <input
@@ -98,7 +98,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
           </div>
 
           <div className="col-span-2">
-            <label htmlFor="pincode" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="pincode" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               Pincode
             </label>
             <input
@@ -116,7 +116,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
           </div>
 
           <div className="col-span-2">
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="phone" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               Phone Number
             </label>
             <input
@@ -137,7 +137,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="button"
-            className="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition-all duration-200"
+            className="px-6 py-3 bg-gray-200  text-gray-700 dark:text-gray-50 dark:bg-slate-500 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition-all duration-200"
             onClick={prevStep}
           >
             Previous

@@ -39,6 +39,11 @@ const navItems: NavItem[] = [
     href: "/dashboard/parcels",
     icon: <PackageSearch className="h-5 w-5" />,
   },
+  {
+    title: "Confirm Parcel",
+    href: "/dashboard/couriers",
+    icon: <PackageSearch className="h-5 w-5" />,
+  },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -95,19 +100,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </Button>
         <div className="flex items-center gap-2">
           <Package className="h-6 w-6 text-primary" />
-          <span className="text-lg font-bold">Quantum Control</span>
+          <span className="text-lg font-bold">courierWallah</span>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/dashboard/settings">
-              <Settings className="h-5 w-5" />
-              <span className="sr-only">Settings</span>
-            </Link>
-          </Button>
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <User className="h-5 w-5" />
-            <span className="sr-only">Profile</span>
-          </Button>
+          
           <Button variant="ghost" size="icon" asChild>
             <Link href="/login">
               <LogOut className="h-5 w-5" />

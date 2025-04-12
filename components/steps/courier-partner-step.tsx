@@ -95,7 +95,7 @@ export default function CourierPartnerStep({ formData, updateFormData, nextStep,
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="button"
-            className="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition-all duration-200"
+            className="px-6 py-3 bg-gray-200  text-gray-700 dark:bg-slate-500 dark:text-gray-50 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition-all duration-200"
             onClick={prevStep}
           >
             Previous

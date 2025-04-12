@@ -57,3 +57,12 @@
     @apply bg-background text-foreground;
   }
 }
+.text-primary {
+  color: rgb(79 70 229 / var(--tw-bg-opacity, 1));
+}
+.bg-primary {
+  background-color: rgb(79 70 229 / var(--tw-bg-opacity, 1));
+}
+.bg-primary:focus {
+  background-color: rgb(79 70 229 / var(--tw-bg-opacity, 1));
+}

@@ -172,7 +172,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
       <form onSubmit={handleSubmit}>
         {/* Tracking ID Field */}
         <div className="mb-6">
-          <label htmlFor="trackingId" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="trackingId" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
             Tracking ID
           </label>
           <div className="relative">
@@ -207,7 +207,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
         {/* New Courier Detail Fields */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
-            <label htmlFor="totalAmount" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="totalAmount" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               Total Amount (₹)
             </label>
             <input
@@ -224,7 +224,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
             />
           </div>
           <div>
-            <label htmlFor="Waybill" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="Waybill" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               Waybill
             </label>
             <input
@@ -238,7 +238,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
             />
           </div>
           <div>
-            <label htmlFor="Quantity" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="Quantity" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               Quantity
             </label>
             <input
@@ -255,7 +255,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
             />
           </div>
           <div>
-            <label htmlFor="shippingMethod" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="shippingMethod" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               Shipping Method
             </label>
             <select
@@ -271,7 +271,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
             </select>
           </div>
           <div>
-            <label htmlFor="paymentMethod" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="paymentMethod" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               Payment Method
             </label>
             <select
@@ -303,7 +303,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                     checked={formData.constantFields.includes("weight")}
                     onChange={handleConstantFieldChange}
                   />
-                  <span className="text-gray-700">Weight</span>
+                  <span className=" text-gray-700 dark:text-gray-50">Weight</span>
                 </label>
 
                 <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
@@ -314,7 +314,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                     checked={formData.constantFields.includes("dimensions")}
                     onChange={handleConstantFieldChange}
                   />
-                  <span className="text-gray-700">Dimensions</span>
+                  <span className=" text-gray-700 dark:text-gray-50">Dimensions</span>
                 </label>
 
                 <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
@@ -325,7 +325,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                     checked={formData.constantFields.includes("description")}
                     onChange={handleConstantFieldChange}
                   />
-                  <span className="text-gray-700">Description</span>
+                  <span className=" text-gray-700 dark:text-gray-50">Description</span>
                 </label>
 
                 <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
@@ -336,7 +336,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                     checked={formData.constantFields.includes("shippingMethod")}
                     onChange={handleConstantFieldChange}
                   />
-                  <span className="text-gray-700">Shipping Method</span>
+                  <span className=" text-gray-700 dark:text-gray-50">Shipping Method</span>
                 </label>
 
                 <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
@@ -347,7 +347,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                     checked={formData.constantFields.includes("paymentMethod")}
                     onChange={handleConstantFieldChange}
                   />
-                  <span className="text-gray-700">Payment Method</span>
+                  <span className=" text-gray-700 dark:text-gray-50">Payment Method</span>
                 </label>
               </div>
             </div>
@@ -390,7 +390,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                         className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm"
                       >
                         <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-b border-gray-200">
-                          <h6 className="font-medium text-gray-700">Courier #{index + 1}</h6>
+                          <h6 className="font-medium  text-gray-700 dark:text-gray-50">Courier #{index + 1}</h6>
                           <button
                             type="button"
                             className="p-1 text-red-500 hover:text-red-700 focus:outline-none"
@@ -413,7 +413,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                         <div className="p-4">
                           {/* Tracking ID for this courier */}
                           <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Tracking ID</label>
+                            <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">Tracking ID</label>
                             <input
                               type="text"
                               className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none transition-all duration-200 font-mono"
@@ -424,10 +424,10 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
 
                           {/* To Address for this courier */}
                           <div className="mb-4">
-                            <h6 className="font-medium text-gray-700 mb-3">Recipient Address</h6>
+                            <h6 className="font-medium  text-gray-700 dark:text-gray-50 mb-3">Recipient Address</h6>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Name</label>
                                 <input
                                   type="text"
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
@@ -438,7 +438,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Phone</label>
                                 <input
                                   type="tel"
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
@@ -449,7 +449,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                                 />
                               </div>
                               <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Address</label>
                                 <input
                                   type="text"
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
@@ -460,7 +460,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">City</label>
                                 <input
                                   type="text"
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
@@ -471,7 +471,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">State</label>
                                 <input
                                   type="text"
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
@@ -482,7 +482,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Pincode</label>
                                 <input
                                   type="text"
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
@@ -500,7 +500,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {!formData.constantFields.includes("weight") && (
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Weight (kg)</label>
                                 <input
                                   type="number"
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
@@ -516,7 +516,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                             
                             {!formData.constantFields.includes("dimensions") && (
                               <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Dimensions (cm)</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Dimensions (cm)</label>
                                 <div className="grid grid-cols-3 gap-2">
                                   <input
                                     type="number"
@@ -551,7 +551,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
 
                             {!formData.constantFields.includes("description") && (
                               <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Description</label>
                                 <textarea
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.description}
@@ -563,7 +563,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                             )}
 
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount (₹)</label>
+                              <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Total Amount (₹)</label>
                               <input
                                 type="number"
                                 className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
@@ -578,7 +578,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
 
                             {!formData.constantFields.includes("shippingMethod") && (
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Shipping Method</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Shipping Method</label>
                                 <select
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.shippingMethod}
@@ -595,7 +595,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
 
                             {!formData.constantFields.includes("paymentMethod") && (
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Payment Method</label>
                                 <select
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.paymentMethod}
@@ -623,7 +623,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
         {(formData.constantFields.length === 0 || formData.courierType === "parcel") && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label htmlFor="weight" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="weight" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
                 Weight (kg)
               </label>
               <input
@@ -640,7 +640,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
               />
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="dimensions" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="dimensions" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
                 Dimensions (cm)
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -680,7 +680,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
               </div>
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="description" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
                 Description
               </label>
               <textarea
@@ -701,7 +701,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="button"
-            className="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition-all duration-200"
+            className="px-6 py-3 bg-gray-200  text-gray-700 dark:bg-slate-500 dark:text-gray-50 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition-all duration-200"
             onClick={prevStep}
           >
             Previous

@@ -9,7 +9,7 @@ export default function ProgressBar({ currentStep, totalSteps }: ProgressBarProp
   return (
     <div className="mb-6">
       <div className="flex justify-between items-center mb-2">
-        <span className="text-sm font-medium text-gray-600">
+        <span className="text-sm font-medium  text-gray-700 dark:text-gray-50">
           Step {currentStep} of {totalSteps}
         </span>
         <span className="text-sm font-medium text-indigo-600">{Math.round(progress)}%</span>

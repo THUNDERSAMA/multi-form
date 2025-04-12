@@ -76,7 +76,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block font-medium text-gray-700 mb-2">Upload Courier Image</label>
+          <label className="block font-medium  text-gray-700 dark:text-gray-50 mb-2">Upload Courier Image</label>
           <input
             type="file"
             accept="image/*"
@@ -130,7 +130,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
             {/* Address Details */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <h5 className="text-sm font-semibold text-gray-700">From</h5>
+                <h5 className="text-sm font-semibold  text-gray-700 dark:text-gray-50">From</h5>
                 <address className="text-gray-600 text-sm">
                   {formData.fromAddress.name}<br />
                   {formData.fromAddress.address}<br />
@@ -139,7 +139,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
                 </address>
               </div>
               <div>
-                <h5 className="text-sm font-semibold text-gray-700">To</h5>
+                <h5 className="text-sm font-semibold  text-gray-700 dark:text-gray-50">To</h5>
                 <address className="text-gray-600 text-sm">
                   {formData.toAddress.name}<br />
                   {formData.toAddress.address}<br />
@@ -184,7 +184,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
               <div>
-                <h5 className="text-sm font-semibold text-gray-700">To</h5>
+                <h5 className="text-sm font-semibold  text-gray-700 dark:text-gray-50">To</h5>
                 <address className="text-gray-600 text-sm">
                   {courier.toAddress.name}<br />
                   {courier.toAddress.address}<br />
@@ -231,7 +231,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
             {/* Address Details */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <h5 className="text-sm font-semibold text-gray-700">From</h5>
+                <h5 className="text-sm font-semibold  text-gray-700 dark:text-gray-50">From</h5>
                 <address className="text-gray-600 text-sm">
                   {formData.fromAddress.name}<br />
                   {formData.fromAddress.address}<br />
@@ -240,7 +240,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
                 </address>
               </div>
               <div>
-                <h5 className="text-sm font-semibold text-gray-700">To</h5>
+                <h5 className="text-sm font-semibold  text-gray-700 dark:text-gray-50">To</h5>
                 <address className="text-gray-600 text-sm">
                   {formData.toAddress.name}<br />
                   {formData.toAddress.address}<br />
@@ -265,7 +265,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
         </div>)
         }
         <div className="flex justify-between mt-6">
-          <button type="button" onClick={prevStep} className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+          <button type="button" onClick={prevStep} className="px-4 py-2 dark:bg-slate-500 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
             Previous
           </button>
           <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
