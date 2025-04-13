@@ -60,7 +60,7 @@ export default function CourierPartnerStep({ formData, updateFormData, nextStep,
               key={partner.id}
               className={`bg-white rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
                 formData.courierPartner === partner.id
-                  ? "border-2 border-indigo-500 shadow-md"
+                  ? "border-spacing-2 border-4 border-indigo-500 shadow-md"
                   : "border border-gray-200 hover:shadow-md"
               }`}
               onClick={() => updateFormData({ courierPartner: partner.id })}

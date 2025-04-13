@@ -27,7 +27,7 @@ export default function CourierTypeStep({ formData, updateFormData, nextStep, pr
             whileTap={{ scale: 0.98 }}
             className={`bg-white rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
               formData.courierType === "parcel"
-                ? "border-2 border-indigo-500 shadow-md"
+                ? "border-4 border-indigo-500 shadow-md"
                 : "border border-gray-200 hover:shadow-md"
             }`}
             onClick={() => updateFormData({ courierType: "parcel" })}
@@ -72,7 +72,7 @@ export default function CourierTypeStep({ formData, updateFormData, nextStep, pr
             whileTap={{ scale: 0.98 }}
             className={`bg-white rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
               formData.courierType === "document"
-                ? "border-2 border-indigo-500 shadow-md"
+                ? "border-4 border-indigo-500 shadow-md"
                 : "border border-gray-200 hover:shadow-md"
             }`}
             onClick={() => updateFormData({ courierType: "document" })}

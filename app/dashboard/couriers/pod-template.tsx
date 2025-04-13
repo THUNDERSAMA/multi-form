@@ -273,7 +273,7 @@ export function PODTemplate({ courier }: PODTemplateProps) {
 
                 <div className="flex border-t border-blue-700">
                   <div className="w-1/2 p-2 border-r border-blue-700">
-                    <div className="text-blue-700 font-semibold text-center">WEIGHT (KG)</div>
+                    <div className="text-blue-700 font-semibold text-center">WEIGHT(KG)</div>
                     <div className="h-16 flex items-center justify-center">2.5</div>
                   </div>
 
@@ -290,13 +290,15 @@ export function PODTemplate({ courier }: PODTemplateProps) {
               </div>
 
               <div className="w-2/3 p-2">
+              <div className="text-blue-700 font-semibold mb-4">RECEIVED IN GOOD CONDITION</div>
+              <div className="text-blue-700 font-semibold mb-4">
+                  STAMP ........................................................
+                </div>
                 <div className="text-blue-700 font-semibold mb-4">
                   SIGNED ................................................................
                 </div>
-                <div className="text-blue-700 font-semibold mb-4">RECEIVED IN GOOD CONDITION</div>
-                <div className="text-blue-700 font-semibold mb-4">
-                  PRINT NAME ........................................................
-                </div>
+                
+                
                 <div className="text-blue-700 font-semibold mb-4">
                   DATE ................................................................
                 </div>

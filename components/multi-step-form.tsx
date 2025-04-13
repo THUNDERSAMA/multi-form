@@ -43,6 +43,7 @@ export type FormData = {
   courierDetails: CourierDetail
   constantFields: string[]
   multipleCouriers: CourierDetail[]
+  payementType: string
   courierImage: string
   trackingId: string
   waybill: string,
@@ -98,13 +99,14 @@ export default function MultiStepForm() {
     },
     constantFields: [],
     multipleCouriers: [],
+    payementType: "cod",
     courierImage: "",
     trackingId: "",
     totalAmount: "",
     waybill: "",
     quantity: "",
     shippingMethod: "surface",
-    paymentMethod: "cod",
+    paymentMethod: "prepaid",
   })
 
   const totalSteps = formData.courierType === "parcel" ? 7 : 7

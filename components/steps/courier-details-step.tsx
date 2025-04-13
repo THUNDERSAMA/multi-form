@@ -178,7 +178,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
           <div className="relative">
             <input
               type="text"
-              className="w-full px-4 py-3 pr-10 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none transition-all duration-200 font-mono"
+              className="w-full px-4 py-3 pr-10 rounded-lg border border-gray-300  focus:outline-none transition-all duration-200 font-mono"
               id="trackingId"
               value={formData.trackingId}
               readOnly
@@ -203,7 +203,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
             This unique tracking ID is automatically generated and cannot be edited.
           </p>
         </div>
-
+        
         {/* New Courier Detail Fields */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
@@ -282,8 +282,25 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
               onChange={handleChange}
               required
             >
-              <option value="cod">Cash on Delivery (COD)</option>
               <option value="prepaid">Prepaid</option>
+              <option value="cod">Cash on Delivery (COD)</option>
+              
+            </select>
+          </div>
+          <div>
+            <label htmlFor="payementType" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
+            Payement Type
+            </label>
+            <select
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              id="payementType"
+              name="payementType"
+              value={formData.payementType}
+              onChange={handleChange}
+              required
+            >
+              <option value="cod">Cod</option>
+              <option value="Billed">Billed</option>
             </select>
           </div>
         </div>
