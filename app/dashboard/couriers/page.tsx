@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,53 +18,59 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Check, Clock, X } from "lucide-react"
+import { Check, Clock, X, Download, FileText } from "lucide-react"
+import html2canvas from "html2canvas"
+import PODTemplate from "./pod-template"
 
 // Mock data for couriers
 const mockCouriers = [
   {
-    id: "1",
+    ids: "CR12345678",
     customerName: "John Doe",
-    pickupAddress: "123 Main St, New York, NY",
-    deliveryAddress: "456 Park Ave, New York, NY",
+    pickupAddress: "123 Main St, New York, NY 10001",
+    deliveryAddress: "456 Park Ave, New York, NY 10022",
     packageType: "Document",
     status: "pending",
     date: "2025-04-12",
     time: "14:30",
     price: "$25.99",
+    pincode:"700129"
   },
   {
-    id: "2",
+    ids: "CR23456789",
     customerName: "Jane Smith",
-    pickupAddress: "789 Broadway, New York, NY",
-    deliveryAddress: "101 5th Ave, New York, NY",
+    pickupAddress: "789 Broadway, New York, NY 10003",
+    deliveryAddress: "101 5th Ave, New York, NY 10011",
     packageType: "Small Package",
     status: "pending",
     date: "2025-04-12",
     time: "15:45",
     price: "$32.50",
+    pincode:"700129"
   },
   {
-    id: "3",
+    ids: "CR34567890",
     customerName: "Robert Johnson",
-    pickupAddress: "222 West St, New York, NY",
-    deliveryAddress: "333 East St, New York, NY",
+    pickupAddress: "222 West St, New York, NY 10014",
+    deliveryAddress: "333 East St, New York, NY 10016",
     packageType: "Medium Package",
     status: "confirmed",
     date: "2025-04-13",
     time: "09:15",
     price: "$45.75",
+    pincode:"700129"
   },
   {
-    id: "4",
+    ids: "CR45678901",
     customerName: "Emily Davis",
-    pickupAddress: "444 North Ave, New York, NY",
-    deliveryAddress: "555 South Blvd, New York, NY",
+    pickupAddress: "444 North Ave, New York, NY 10018",
+    deliveryAddress: "555 South Blvd, New York, NY 10019",
     packageType: "Large Package",
     status: "cancelled",
     date: "2025-04-13",
     time: "11:30",
     price: "$58.25",
+    pincode:"700129"
   },
 ]
 
@@ -76,6 +82,7 @@ export default function CouriersPage() {
   const [couriers, setCouriers] = useState(mockCouriers)
   const [selectedCourier, setSelectedCourier] = useState<(typeof mockCouriers)[0] | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const [podModalOpen, setPodModalOpen] = useState(false)
   const router = useRouter()
 
   // Correct password for this demo
@@ -98,13 +105,34 @@ export default function CouriersPage() {
   }
 
   const handleConfirmCourier = (id: string) => {
-    setCouriers(couriers.map((courier) => (courier.id === id ? { ...courier, status: "confirmed" } : courier)))
+    setCouriers(couriers.map((courier) => (courier.ids === id ? { ...courier, status: "confirmed" } : courier)))
     setDetailsOpen(false)
   }
 
   const handleCancelCourier = (id: string) => {
-    setCouriers(couriers.map((courier) => (courier.id === id ? { ...courier, status: "cancelled" } : courier)))
+    setCouriers(couriers.map((courier) => (courier.ids === id ? { ...courier, status: "cancelled" } : courier)))
     setDetailsOpen(false)
+  }
+
+  const generatePOD = () => {
+    setPodModalOpen(true)
+  }
+
+  const podRef = useRef<HTMLDivElement>(null)
+  const downloadPOD = async () => {
+    if (podRef.current) {
+      const canvas = await html2canvas(podRef.current, {
+        scale: 2, // Higher resolution
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+      })
+      const dataUrl = canvas.toDataURL("image/png")
+      const link = document.createElement("a")
+      link.download = `POD-${selectedCourier?.ids}.png`
+      link.href = dataUrl
+      link.click()
+    }
   }
 
   const getStatusBadge = (status: string) => {
@@ -185,7 +213,7 @@ export default function CouriersPage() {
         <TabsContent value="all" className="space-y-4">
           {couriers.map((courier) => (
             <CourierCard
-              key={courier.id}
+              key={courier.ids}
               courier={courier}
               onViewDetails={() => {
                 setSelectedCourier(courier)
@@ -201,7 +229,7 @@ export default function CouriersPage() {
             .filter((c) => c.status === "pending")
             .map((courier) => (
               <CourierCard
-                key={courier.id}
+                key={courier.ids}
                 courier={courier}
                 onViewDetails={() => {
                   setSelectedCourier(courier)
@@ -217,7 +245,7 @@ export default function CouriersPage() {
             .filter((c) => c.status === "confirmed")
             .map((courier) => (
               <CourierCard
-                key={courier.id}
+                key={courier.ids}
                 courier={courier}
                 onViewDetails={() => {
                   setSelectedCourier(courier)
@@ -233,7 +261,7 @@ export default function CouriersPage() {
             .filter((c) => c.status === "cancelled")
             .map((courier) => (
               <CourierCard
-                key={courier.id}
+                key={courier.ids}
                 courier={courier}
                 onViewDetails={() => {
                   setSelectedCourier(courier)
@@ -252,7 +280,7 @@ export default function CouriersPage() {
             <>
               <DialogHeader>
                 <DialogTitle>Courier Booking Details</DialogTitle>
-                <DialogDescription>Booking ID: {selectedCourier.id}</DialogDescription>
+                <DialogDescription>Booking ID: {selectedCourier.ids}</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-3 items-center gap-4">
@@ -291,23 +319,55 @@ export default function CouriersPage() {
                   <>
                     <Button
                       variant="destructive"
-                      onClick={() => handleCancelCourier(selectedCourier.id)}
+                      onClick={() => handleCancelCourier(selectedCourier.ids)}
                       className="flex items-center gap-2"
                     >
                       <X size={16} /> Cancel Booking
                     </Button>
                     <Button
-                      onClick={() => handleConfirmCourier(selectedCourier.id)}
+                      onClick={() => handleConfirmCourier(selectedCourier.ids)}
                       className="flex items-center gap-2"
                     >
                       <Check size={16} /> Confirm Booking
                     </Button>
                   </>
                 )}
-                {selectedCourier.status !== "pending" && <Button onClick={() => setDetailsOpen(false)}>Close</Button>}
+                {selectedCourier.status !== "pending" && (
+                  <>
+                    <Button variant="outline" onClick={() => setDetailsOpen(false)}>
+                      Close
+                    </Button>
+                    <Button onClick={generatePOD} className="flex items-center gap-2">
+                      <FileText size={16} /> Generate POD
+                    </Button>
+                  </>
+                )}
               </DialogFooter>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* POD Modal */}
+      <Dialog open={podModalOpen} onOpenChange={setPodModalOpen}>
+        <DialogContent className="max-w-5xl">
+          <DialogHeader>
+            <DialogTitle>Proof of Delivery (POD)</DialogTitle>
+            <DialogDescription>Preview and download the proof of delivery document</DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4 overflow-auto max-h-[70vh]">
+            <div ref={podRef}>{selectedCourier && <PODTemplate courier={selectedCourier} />}</div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPodModalOpen(false)}>
+              Close
+            </Button>
+            <Button onClick={downloadPOD} className="flex items-center gap-2">
+              <Download size={16} /> Download POD
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
