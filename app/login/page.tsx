@@ -47,7 +47,10 @@ export default function LoginPage() {
         })
   
         if (!response.ok) setError("Invalid email or password")
-  
+        if (response.status === 401) {
+          setError("Invalid email or password")
+          return
+        }
         const { token } = await response.json()
         document.cookie = `token=${token}; path=/`
         router.push('/dashboard')

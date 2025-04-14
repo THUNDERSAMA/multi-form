@@ -37,6 +37,7 @@ export type CourierDetail = {
 export type FormData = {
   pincode: string
   courierPartner: string
+  courierPrice: string,
   courierType: "parcel" | "document"
   toAddress: Address
   fromAddress: Address
@@ -58,6 +59,7 @@ export default function MultiStepForm() {
   const [formData, setFormData] = useState<FormData>({
     pincode: "",
     courierPartner: "",
+    courierPrice: "",
     courierType: "parcel",
     toAddress: {
       name: "",

@@ -14,7 +14,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [submissionStatus, setSubmissionStatus] = useState<{ success: boolean; message: string } | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       const formDataJson = JSON.stringify(
@@ -32,10 +32,31 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
         2
       )
       console.log("Form data JSON:", formDataJson)
-      setSubmissionStatus({
-        success: true,
-        message: "Order submitted successfully! Check the console for the JSON data.",
+      const response = await fetch("/api/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formDataJson),
       })
+      if (!response.ok) {
+        throw new Error("Network response was not ok")
+      }
+      if (response.status === 401) {
+        setSubmissionStatus({
+          success: false,
+          message: "Order not submitted ! Please try again.",
+        })
+        
+      }
+      else
+      {
+        setSubmissionStatus({
+          success: true,
+          message: "Order submitted successfully! Check the console for the JSON data.",
+        })
+      }
+     
     } catch (error) {
       console.error("Error converting form data to JSON:", error)
       setSubmissionStatus({
