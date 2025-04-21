@@ -21,6 +21,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Check, Clock, X, Download, FileText } from "lucide-react"
 import html2canvas from "html2canvas"
 import PODTemplate from "./pod-template"
+import type { Courier } from "@/lib/courierType"
+import { Console } from "console"
 
 // Mock data for couriers
 const mockCouriers = [
@@ -79,21 +81,36 @@ export default function CouriersPage() {
   const [password, setPassword] = useState("")
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [passwordError, setPasswordError] = useState(false)
-  const [couriers, setCouriers] = useState(mockCouriers)
-  const [selectedCourier, setSelectedCourier] = useState<(typeof mockCouriers)[0] | null>(null)
+  const [couriers, setCouriers] = useState<Courier[]>([])
+  const [selectedCourier, setSelectedCourier] = useState<(Courier[])[0] | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [podModalOpen, setPodModalOpen] = useState(false)
   const router = useRouter()
 
   // Correct password for this demo
-  const CORRECT_PASSWORD = "admin123"
+  const CORRECT_PASSWORD = "123"
 
   useEffect(() => {
     // Reset authentication state when component mounts
     setIsAuthenticated(false)
     setIsPasswordModalOpen(true)
   }, [])
-
+  useEffect(() => {
+    // get couriers from api
+    const fetchCouriers = async () => {
+try { const response = await fetch("/api/getData")
+      
+      const data = await response.json()
+      console.log("Response:", data)
+      setCouriers(data.data)
+    }
+    catch (error) {
+      console.error("Error fetching couriers:", error)
+    }
+    }
+    fetchCouriers();
+    
+  }, [])
   const handlePasswordSubmit = () => {
     if (password === CORRECT_PASSWORD) {
       setIsAuthenticated(true)
@@ -104,13 +121,14 @@ export default function CouriersPage() {
     }
   }
 
-  const handleConfirmCourier = (id: string) => {
-    setCouriers(couriers.map((courier) => (courier.ids === id ? { ...courier, status: "confirmed" } : courier)))
+  const handleConfirmCourier = (id: any) => {
+   // setCouriers(couriers.map((courier) => (courier.id === id ? { ...courier, status: 1 } : courier)))
+   console.log("Confirming courier with ID:", id)
     setDetailsOpen(false)
   }
 
-  const handleCancelCourier = (id: string) => {
-    setCouriers(couriers.map((courier) => (courier.ids === id ? { ...courier, status: "cancelled" } : courier)))
+  const handleCancelCourier = (id: any) => {
+   // setCouriers(couriers.map((courier) => (courier.id === id ? { ...courier, status: 2 } : courier)))
     setDetailsOpen(false)
   }
 
@@ -129,13 +147,14 @@ export default function CouriersPage() {
       })
       const dataUrl = canvas.toDataURL("image/png")
       const link = document.createElement("a")
-      link.download = `POD-${selectedCourier?.ids}.png`
+      link.download = `POD-${selectedCourier?.id}.png`
       link.href = dataUrl
       link.click()
     }
   }
 
   const getStatusBadge = (status: string) => {
+    console.log("Status:", status)
     switch (status) {
       case "pending":
         return (
@@ -197,7 +216,11 @@ export default function CouriersPage() {
       </Dialog>
     )
   }
-
+  if(!couriers) {
+    return <div className="text-center">Loading...</div>
+  }
+  else
+  {
   return (
     <div className="container mx-auto py-6">
       <h1 className="text-3xl font-bold mb-6">Courier Bookings</h1>
@@ -213,61 +236,61 @@ export default function CouriersPage() {
         <TabsContent value="all" className="space-y-4">
           {couriers.map((courier) => (
             <CourierCard
-              key={courier.ids}
+              key={courier.id}
               courier={courier}
               onViewDetails={() => {
                 setSelectedCourier(courier)
                 setDetailsOpen(true)
               }}
-              statusBadge={getStatusBadge(courier.status)}
+              statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
             />
           ))}
         </TabsContent>
 
         <TabsContent value="pending" className="space-y-4">
           {couriers
-            .filter((c) => c.status === "pending")
+            .filter((c) => c.status === 0)
             .map((courier) => (
               <CourierCard
-                key={courier.ids}
+                key={courier.id}
                 courier={courier}
                 onViewDetails={() => {
                   setSelectedCourier(courier)
                   setDetailsOpen(true)
                 }}
-                statusBadge={getStatusBadge(courier.status)}
+                statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
               />
             ))}
         </TabsContent>
 
         <TabsContent value="confirmed" className="space-y-4">
           {couriers
-            .filter((c) => c.status === "confirmed")
+            .filter((c) => c.status == 1)
             .map((courier) => (
               <CourierCard
-                key={courier.ids}
+                key={courier.id}
                 courier={courier}
                 onViewDetails={() => {
                   setSelectedCourier(courier)
                   setDetailsOpen(true)
                 }}
-                statusBadge={getStatusBadge(courier.status)}
+                statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
               />
             ))}
         </TabsContent>
 
         <TabsContent value="cancelled" className="space-y-4">
           {couriers
-            .filter((c) => c.status === "cancelled")
+            .filter((c) => c.status ==2)
             .map((courier) => (
               <CourierCard
-                key={courier.ids}
+                key={courier.id}
                 courier={courier}
                 onViewDetails={() => {
                   setSelectedCourier(courier)
                   setDetailsOpen(true)
                 }}
-                statusBadge={getStatusBadge(courier.status)}
+                statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
               />
             ))}
         </TabsContent>
@@ -275,74 +298,92 @@ export default function CouriersPage() {
 
       {/* Courier Details Dialog */}
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="">
           {selectedCourier && (
             <>
-              <DialogHeader>
-                <DialogTitle>Courier Booking Details</DialogTitle>
-                <DialogDescription>Booking ID: {selectedCourier.ids}</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <Label className="text-right">Customer</Label>
-                  <div className="col-span-2">{selectedCourier.customerName}</div>
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <Label className="text-right">Pickup</Label>
-                  <div className="col-span-2">{selectedCourier.pickupAddress}</div>
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <Label className="text-right">Delivery</Label>
-                  <div className="col-span-2">{selectedCourier.deliveryAddress}</div>
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <Label className="text-right">Package</Label>
-                  <div className="col-span-2">{selectedCourier.packageType}</div>
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <Label className="text-right">Date & Time</Label>
-                  <div className="col-span-2">
-                    {selectedCourier.date} at {selectedCourier.time}
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <Label className="text-right">Price</Label>
-                  <div className="col-span-2">{selectedCourier.price}</div>
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <Label className="text-right">Status</Label>
-                  <div className="col-span-2">{getStatusBadge(selectedCourier.status)}</div>
+            {(() => {
+          const parsedData = typeof selectedCourier.data === "string"
+            ? JSON.parse(selectedCourier.data)
+            : selectedCourier.data;
+           console.log("Parsed Data:", selectedCourier.date_time)
+          return (
+            <>
+            <DialogHeader>
+              <DialogTitle>Courier Booking Details</DialogTitle>
+              <DialogDescription>Booking ID: {parsedData.trackingId}</DialogDescription>
+            </DialogHeader>
+          
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6 space-y-4 w-full">
+              <div className="grid grid-cols-3 items-start gap-4">
+                <Label className="text-right text-gray-600 font-medium">Customer</Label>
+                <div className="col-span-2 text-gray-800">{parsedData.fromAddress.name}</div>
+              </div>
+              <div className="grid grid-cols-3 items-start gap-4">
+                <Label className="text-right text-gray-600 font-medium">Pickup</Label>
+                <div className="col-span-2 text-gray-800">{parsedData.fromAddress.address}</div>
+              </div>
+              <div className="grid grid-cols-3 items-start gap-4">
+                <Label className="text-right text-gray-600 font-medium">Delivery</Label>
+                <div className="col-span-2 text-gray-800">{parsedData.toAddress.address}</div>
+              </div>
+              <div className="grid grid-cols-3 items-start gap-4">
+                <Label className="text-right text-gray-600 font-medium">Package</Label>
+                <div className="col-span-2 text-gray-800 capitalize">{parsedData.courierType}</div>
+              </div>
+              <div className="grid grid-cols-3 items-start gap-4">
+                <Label className="text-right text-gray-600 font-medium">Date & Time</Label>
+                <div className="col-span-2 text-gray-800">{selectedCourier.date_time}</div>
+              </div>
+              <div className="grid grid-cols-3 items-start gap-4">
+                <Label className="text-right text-gray-600 font-medium">Price</Label>
+                <div className="col-span-2 text-gray-800 font-semibold">₹{parsedData.courierPrice}</div>
+              </div>
+              <div className="grid grid-cols-3 items-start gap-4">
+                <Label className="text-right text-gray-600 font-medium">Status</Label>
+                <div className="col-span-2">
+                  {getStatusBadge(
+                    selectedCourier.status ==0
+                      ? "pending"
+                      : selectedCourier.status ==1
+                      ? "confirmed"
+                      : "cancelled"
+                  )}
                 </div>
               </div>
-              <DialogFooter className="flex justify-between">
-                {selectedCourier.status === "pending" && (
-                  <>
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleCancelCourier(selectedCourier.ids)}
-                      className="flex items-center gap-2"
-                    >
-                      <X size={16} /> Cancel Booking
-                    </Button>
-                    <Button
-                      onClick={() => handleConfirmCourier(selectedCourier.ids)}
-                      className="flex items-center gap-2"
-                    >
-                      <Check size={16} /> Confirm Booking
-                    </Button>
-                  </>
-                )}
-                {selectedCourier.status !== "pending" && (
-                  <>
-                    <Button variant="outline" onClick={() => setDetailsOpen(false)}>
-                      Close
-                    </Button>
-                    <Button onClick={generatePOD} className="flex items-center gap-2">
-                      <FileText size={16} /> Generate POD
-                    </Button>
-                  </>
-                )}
-              </DialogFooter>
+            </div>
+          
+            <DialogFooter className="flex justify-between flex-wrap gap-2 pt-4">
+              {selectedCourier.status == 0 && (
+                <>
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleCancelCourier(selectedCourier.id)}
+                    className="flex items-center gap-2"
+                  >
+                    <X size={16} /> Cancel Booking
+                  </Button>
+                  <Button
+                    onClick={() => handleConfirmCourier(selectedCourier.id)}
+                    className="flex items-center gap-2"
+                  >
+                    <Check size={16} /> Confirm Booking
+                  </Button>
+                </>
+              )}
+          
+              <div className="flex gap-2 ml-auto">
+                <Button variant="outline" onClick={() => setDetailsOpen(false)}>
+                  Close
+                </Button>
+                <Button onClick={generatePOD} className="flex items-center gap-2">
+                  <FileText size={16} /> Generate POD
+                </Button>
+              </div>
+            </DialogFooter>
+          </>
+          
+          );
+        })()}
             </>
           )}
         </DialogContent>
@@ -380,41 +421,45 @@ function CourierCard({
   onViewDetails,
   statusBadge,
 }: {
-  courier: (typeof mockCouriers)[0]
+  courier: Courier
   onViewDetails: () => void
   statusBadge: React.ReactNode
-}) {
+}) { const parsedData = typeof courier.data === 'string' ? JSON.parse(courier.data) : courier.data;
   return (
     <Card>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle>{courier.customerName}</CardTitle>
+          <CardTitle>{parsedData.toAddress.address}</CardTitle>
           {statusBadge}
         </div>
         <CardDescription className="flex items-center gap-1">
           <Clock size={14} />
-          {courier.date} at {courier.time}
+          {courier.date_time} 
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-2">
         <div className="grid gap-2">
           <div>
-            <span className="text-sm font-medium">Pickup:</span> {courier.pickupAddress}
+            <span className="text-sm font-medium">Pickup:</span> {parsedData.fromAddress.address}
           </div>
           <div>
-            <span className="text-sm font-medium">Delivery:</span> {courier.deliveryAddress}
+            <span className="text-sm font-medium">Delivery:</span> {parsedData.toAddress.address}
           </div>
           <div>
-            <span className="text-sm font-medium">Package:</span> {courier.packageType}
+            <span className="text-sm font-medium">Package:</span> {parsedData.courierType}
+          </div>
+          <div>
+            <span className="text-sm font-medium">Partner:</span> {parsedData.courierPartner}
           </div>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <div className="font-medium">{courier.price}</div>
+        <div className="font-medium">{parsedData.courierPrice}</div>
         <Button variant="outline" onClick={onViewDetails}>
           View Details
         </Button>
       </CardFooter>
     </Card>
   )
+}
 }

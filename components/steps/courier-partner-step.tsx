@@ -28,10 +28,20 @@ export default function CourierPartnerStep({ formData, updateFormData, nextStep,
   useEffect(() => {
     const getCourierPartners = async () => {
       try {
-        const response = await fetch("/api/courier-partners")
+        const response = await fetch("/api/courier-partners"
+        , {
+         method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pincode: formData.pincode ,type: formData.shippingMethod||"surface" }),
+        })
+        
         const data = await response.json()
-        const filteredPartners = courierPartnersData.filter((courierPartnersData) => JSON.parse(data).includes(courierPartnersData.name));
-        setCourierPartners(filteredPartners)
+        console.log("DATA:", data.data);
+        //const filteredPartners = courierPartnersData.filter((courierPartnersData) => JSON.parse(data.data).includes(courierPartnersData.name));
+        //console.log("Filtered Partners:", filteredPartners)
+        setCourierPartners(data.data)
       } catch (error) {
         console.error("Error fetching courier partners:", error)
       }
@@ -53,7 +63,7 @@ export default function CourierPartnerStep({ formData, updateFormData, nextStep,
       <h3 className="text-2xl font-semibold mb-6 text-gray-800">Choose Courier Partner</h3>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          {courierPartners.map((partner) => (
+          {courierPartnersData.map((partner) => (
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

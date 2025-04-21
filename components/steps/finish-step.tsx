@@ -31,7 +31,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
         },
         2
       )
-      console.log("Form data JSON:", formDataJson)
+     // console.log("Form data JSON:", formDataJson)
       const response = await fetch("/api/submit", {
         method: "POST",
         headers: {
@@ -39,15 +39,21 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
         },
         body: JSON.stringify(formDataJson),
       })
-      if (!response.ok) {
-        throw new Error("Network response was not ok")
-      }
-      if (response.status === 401) {
+      if (response.status === 300) {
         setSubmissionStatus({
           success: false,
-          message: "Order not submitted ! Please try again.",
-        })
-        
+          message: "Order not submitted! Duplicate order.",
+        });
+      } else if (response.status === 401) {
+        setSubmissionStatus({
+          success: false,
+          message: "Order not submitted! Please try again.",
+        });
+      } else if (response.ok) {
+        setSubmissionStatus({
+          success: true,
+          message: "Order submitted successfully!",
+        });
       }
       else
       {
@@ -123,7 +129,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
           <h4 className="text-lg font-semibold text-blue-700 mb-2">Order Summary</h4>
           <div className="space-y-4">
             {/* Basic Details */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <span className="block text-sm font-medium text-gray-600">Tracking ID</span>
                 <p className="text-gray-800 font-mono">{formData.trackingId}</p>
@@ -132,6 +138,13 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
                 <span className="block text-sm font-medium text-gray-600">Courier Partner</span>
                 <p className="text-gray-800">{formData.courierPartner}</p>
               </div>
+              
+              {formData.payementType === "cod"?(
+              <div>
+                <span className="block text-sm font-medium text-gray-600">Courier Price</span>
+                <p className="text-gray-800">₹{formData.courierPrice}</p>
+                </div>
+                ):<></>}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
@@ -229,10 +242,18 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
                 <span className="block text-sm font-medium text-gray-600">Tracking ID</span>
                 <p className="text-gray-800 font-mono">{formData.trackingId}</p>
               </div>
+
               <div>
                 <span className="block text-sm font-medium text-gray-600">Courier Partner</span>
                 <p className="text-gray-800">{formData.courierPartner}</p>
               </div>
+             <div>{formData.payementType}</div> 
+              {formData.payementType === "cod"?(
+              <div>
+                <span className="block text-sm font-medium text-gray-600">Courier Price</span>
+                <p className="text-gray-800">₹{formData.courierPrice}</p>
+                </div>
+                ):<></>}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>

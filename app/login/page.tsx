@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -11,6 +11,7 @@ import { Button } from "@/components/multiform_ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/multiform_ui/card"
 import { Input } from "@/components/multiform_ui/input"
 import { Label } from "@/components/multiform_ui/label"
+import Cookies from 'js-cookie'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -19,6 +20,16 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
 
+   useEffect(() => {
+     const token = Cookies.get('token')
+ 
+     if (token) {
+       router.replace('/dashboard') // If no token is found, redirect to login page
+       return
+     }
+ 
+    
+   }, [router])
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")

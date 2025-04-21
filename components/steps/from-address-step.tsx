@@ -12,8 +12,25 @@ interface FromAddressStepProps {
 }
 
 export default function FromAddressStep({ formData, updateFormData, nextStep, prevStep }: FromAddressStepProps) {
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    try {
+      const response = await fetch("/api/getPrice"
+      , {
+       method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pincode: formData.pincode ,type: formData.shippingMethod||"surface",courier: formData.courierPartner ,weight: formData.courierDetails.weight,length: formData.courierDetails.length,width: formData.courierDetails.width,height: formData.courierDetails.height,quantity: formData.courierDetails.quantity}),
+      })
+      
+      const data = await response.json()
+      console.log("DATA:", data);
+      formData.courierPrice = data.data.status;
+      
+    } catch (error) {
+      console.error("Error fetching courier partners:", error)
+    }
     console.log("Form in last stage from here prices should be fetched:");
     nextStep()
   }

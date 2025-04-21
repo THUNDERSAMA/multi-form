@@ -73,8 +73,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
         constantFields: formData.constantFields.filter((field) => field !== value),
       })
     }
-  }
-
+  } 
   const generateTrackingId = (recipientName: string): string => {
     const courierPrefix = formData.courierPartner.substring(0, 3).toUpperCase()
     const sanitizedName = recipientName.replace(/[^a-zA-Z0-9]/g, "")
@@ -83,6 +82,9 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
 
     return `${courierPrefix}${sanitizedName}${date}${timestamp}`
   }
+//  useEffect(() => {
+//   generateTrackingId(formData.toAddress.name)
+//   }, [])
 
   const addCourier = () => {
     const newCourier: CourierDetail = {
@@ -288,6 +290,57 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
             </select>
           </div>
           <div>
+            <label htmlFor="clientInvoice" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
+              Invoice no (client)
+            </label>
+            <input
+              type="number"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              id="clientInvoice"
+              name="clientInvoice"
+              value={formData.clientInvoice}
+              onChange={handleChange}
+              min="1"
+              step="1"
+              
+              placeholder="Enter invoice no"
+            />
+          </div>
+          <div>
+            <label htmlFor="riskSurcharge" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
+              Risk surcharge
+            </label>
+            <input
+              type="number"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              id="riskSurcharge"
+              name="riskSurcharge"
+              value={formData.riskSurcharge}
+              onChange={handleChange}
+              min="1"
+              step="1"
+              
+              placeholder="Enter charge"
+            />
+          </div>
+          <div>
+            <label htmlFor="Risk-factor" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
+              Risk factor
+            </label>
+            <select
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              id="Risk-factor"
+              name="Risk-factor"
+              value={formData.riskfactor}
+              onChange={handleChange}
+              required
+            >
+              <option value="owner-risk">owner-risk</option>
+              <option value="courier-risk">courier-risk</option>
+              
+            </select>
+          </div>
+          <div>
             <label htmlFor="payementType" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
             Payement Type
             </label>
@@ -299,7 +352,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
               onChange={handleChange}
               required
             >
-              <option value="cod">Cod</option>
+              <option value="cod">cod</option>
               <option value="Billed">Billed</option>
             </select>
           </div>

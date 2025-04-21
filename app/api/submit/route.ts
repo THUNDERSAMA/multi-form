@@ -22,13 +22,23 @@ export async function POST(req: Request) {
             "\nCONTENT TYPE:",
             resp.headers.get("content-type"),
           );
-          const data =JSON.parse(await resp.text());
+          const rawText = await resp.text();
+          console.log("raw response:",rawText);
+          const data =JSON.parse(rawText);
             console.log("DATA:", data);
             if(data.status=="error") { 
               return NextResponse.json(
                 { message: 'not submitted' },
                 {
                   status: 401,
+                },
+              )
+            }
+            if(data.status=="duplicate") { 
+              return NextResponse.json(
+                { message: 'not submitted' },
+                {
+                  status: 300,
                 },
               )
             }

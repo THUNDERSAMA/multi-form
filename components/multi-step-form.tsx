@@ -37,8 +37,11 @@ export type CourierDetail = {
 export type FormData = {
   pincode: string
   courierPartner: string
-  courierPrice: string,
+  courierPrice: string
   courierType: "parcel" | "document"
+  riskSurcharge: string
+  riskfactor: "owner-risk" | "courier-risk"
+  clientInvoice: string
   toAddress: Address
   fromAddress: Address
   courierDetails: CourierDetail
@@ -47,8 +50,8 @@ export type FormData = {
   payementType: string
   courierImage: string
   trackingId: string
-  waybill: string,
-  quantity: string,
+  waybill: string
+  quantity: string
   totalAmount: string
   shippingMethod: "surface" | "express"
   paymentMethod: "cod" | "prepaid"
@@ -61,6 +64,9 @@ export default function MultiStepForm() {
     courierPartner: "",
     courierPrice: "",
     courierType: "parcel",
+    riskSurcharge: "",
+    riskfactor: "owner-risk",
+    clientInvoice:"",
     toAddress: {
       name: "",
       address: "",
