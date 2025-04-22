@@ -18,12 +18,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Check, Clock, X, Download, FileText } from "lucide-react"
+import { Check, Clock, X, Download, FileText, Edit } from "lucide-react"
 import html2canvas from "html2canvas"
 import PODTemplate from "./pod-template"
 import type { Courier } from "@/lib/courierType"
 import { Console } from "console"
-
+import { EditParcelDialog } from "./EditParcelDialog"
+import { Toaster } from "@/components/ui/toaster"
 // Mock data for couriers
 const mockCouriers = [
   {
@@ -86,7 +87,9 @@ export default function CouriersPage() {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [podModalOpen, setPodModalOpen] = useState(false)
   const router = useRouter()
-
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [courierToEdit, setCourierToEdit] = useState<(Courier[])[0] | null>(null)
+  const [parcelIdToEdit, setParcelIdToEdit] = useState<string | null>(null)
   // Correct password for this demo
   const CORRECT_PASSWORD = "123"
 
@@ -130,6 +133,16 @@ try { const response = await fetch("/api/getData")
   const handleCancelCourier = (id: any) => {
    // setCouriers(couriers.map((courier) => (courier.id === id ? { ...courier, status: 2 } : courier)))
     setDetailsOpen(false)
+  }
+  const handleEditCourier = (id: any) => {
+    setParcelIdToEdit(id)
+    setEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    // In a real app, we would refresh the courier data from the API
+    // For now, we'll just simulate a successful update
+    console.log("Parcel updated successfully")
   }
 
   const generatePOD = () => {
@@ -243,6 +256,7 @@ try { const response = await fetch("/api/getData")
                 setDetailsOpen(true)
               }}
               statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
+              onEdit={() => handleEditCourier(courier.id)}
             />
           ))}
         </TabsContent>
@@ -259,6 +273,7 @@ try { const response = await fetch("/api/getData")
                   setDetailsOpen(true)
                 }}
                 statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
+                onEdit={() => handleEditCourier(courier.id)}
               />
             ))}
         </TabsContent>
@@ -275,6 +290,7 @@ try { const response = await fetch("/api/getData")
                   setDetailsOpen(true)
                 }}
                 statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
+                onEdit={() => handleEditCourier(courier.id)}
               />
             ))}
         </TabsContent>
@@ -291,6 +307,7 @@ try { const response = await fetch("/api/getData")
                   setDetailsOpen(true)
                 }}
                 statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
+                onEdit={() => handleEditCourier(courier.id)}
               />
             ))}
         </TabsContent>
@@ -411,6 +428,16 @@ try { const response = await fetch("/api/getData")
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {parcelIdToEdit && (
+        <EditParcelDialog
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+          parcelId={parcelIdToEdit}
+          onSuccess={handleEditSuccess}
+        />
+      )}
+
+      <Toaster />
     </div>
   )
 }
@@ -420,9 +447,11 @@ function CourierCard({
   courier,
   onViewDetails,
   statusBadge,
+  onEdit
 }: {
   courier: Courier
   onViewDetails: () => void
+  onEdit: () => void
   statusBadge: React.ReactNode
 }) { const parsedData = typeof courier.data === 'string' ? JSON.parse(courier.data) : courier.data;
   return (
@@ -455,9 +484,14 @@ function CourierCard({
       </CardContent>
       <CardFooter className="flex justify-between">
         <div className="font-medium">{parsedData.courierPrice}</div>
+        <div className="flex gap-2">
+        <Button variant="outline" size="sm" onClick={onEdit} className="flex items-center gap-1">
+            <Edit size={14} /> Edit
+          </Button>
         <Button variant="outline" onClick={onViewDetails}>
           View Details
         </Button>
+        </div>
       </CardFooter>
     </Card>
   )
