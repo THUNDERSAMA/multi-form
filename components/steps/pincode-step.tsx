@@ -29,7 +29,7 @@ export default function PincodeStep({ formData, updateFormData, nextStep }: Pinc
             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             id="pincode"
             value={formData.pincode}
-            onChange={(e) => updateFormData({ pincode: e.target.value })}
+            onChange={(e) => {updateFormData({ pincode: e.target.value ,toAddress: { ...formData.toAddress, pincode: e.target.value }}); }}
             required
             pattern="[0-9]{6}"
             maxLength={6}
