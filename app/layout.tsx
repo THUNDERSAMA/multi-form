@@ -34,6 +34,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import ClientLayout from "./client-layout"
 
 const inter = Inter({ subsets: ["latin"] })
 export const viewport = {
@@ -55,13 +56,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <div className="flex min-h-screen flex-col">
-            <Navbar />
+          <ClientLayout>
             <main className="flex-1">{children}</main>
+            </ClientLayout>
             <Footer />
           </div>
         </ThemeProvider>

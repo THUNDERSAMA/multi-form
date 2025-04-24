@@ -359,13 +359,13 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
         </div>
 
         {formData.courierType === "document" && (
-          <div className="mb-6 p-6 bg-gray-50 rounded-xl border border-gray-200">
+          <div className="mb-6 p-6  text-gray-700 dark:text-gray-50 rounded-xl border border-gray-200">
             <div className="mb-4">
-              <h5 className="font-medium text-lg text-gray-800 mb-3">Select Constant Fields</h5>
+              <h5 className="font-medium text-lg text-gray-50 mb-3">Select Constant Fields</h5>
               <p className="text-gray-600 mb-4">Select fields that will remain constant across multiple couriers</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200  text-gray-700 dark:text-gray-50 cursor-pointer transition-colors duration-200">
                   <input
                     type="checkbox"
                     className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
@@ -376,7 +376,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                   <span className=" text-gray-700 dark:text-gray-50">Weight</span>
                 </label>
 
-                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200  text-gray-700 dark:text-gray-50 cursor-pointer transition-colors duration-200">
                   <input
                     type="checkbox"
                     className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
@@ -387,7 +387,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                   <span className=" text-gray-700 dark:text-gray-50">Dimensions</span>
                 </label>
 
-                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200  text-gray-700 dark:text-gray-50 cursor-pointer transition-colors duration-200">
                   <input
                     type="checkbox"
                     className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
@@ -398,7 +398,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                   <span className=" text-gray-700 dark:text-gray-50">Description</span>
                 </label>
 
-                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200  text-gray-700 dark:text-gray-50 cursor-pointer transition-colors duration-200">
                   <input
                     type="checkbox"
                     className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
@@ -409,7 +409,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                   <span className=" text-gray-700 dark:text-gray-50">Shipping Method</span>
                 </label>
 
-                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200  text-gray-700 dark:text-gray-50 cursor-pointer transition-colors duration-200">
                   <input
                     type="checkbox"
                     className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
@@ -457,9 +457,9 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm"
+                        className=" rounded-xl border border-gray-200 overflow-hidden shadow-sm"
                       >
-                        <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-b border-gray-200">
+                        <div className="flex justify-between items-center px-4 py-3  border-b border-gray-200">
                           <h6 className="font-medium  text-gray-700 dark:text-gray-50">Courier #{index + 1}</h6>
                           <button
                             type="button"
@@ -486,7 +486,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                             <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">Tracking ID</label>
                             <input
                               type="text"
-                              className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none transition-all duration-200 font-mono"
+                              className="w-full px-4 py-2 rounded-lg border border-gray-300  focus:outline-none transition-all duration-200 font-mono"
                               value={courier.trackingId}
                               readOnly
                             />
