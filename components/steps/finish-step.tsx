@@ -1,9 +1,10 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { FormData } from "../multi-step-form"
 import Invoice from "../multiform_ui/invoice"
+import { encode } from "../encoder"
 interface FinishStepProps {
   formData: FormData
   updateFormData: (data: Partial<FormData>) => void
@@ -13,7 +14,21 @@ interface FinishStepProps {
 export default function FinishStep({ formData, updateFormData, prevStep }: FinishStepProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [submissionStatus, setSubmissionStatus] = useState<{ success: boolean; message: string } | null>(null)
+  const [shortId, setShortId] = useState<string>("...");
 
+  useEffect(() => {
+    const getEncoded = async () => {
+      const res = await fetch("/api/encode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: formData.trackingId }),
+      });
+      const data = await res.json();
+      setShortId(data.encoded); // this assumes { encoded: "..." } is returned
+    };
+
+    if (formData.trackingId) getEncoded();
+  }, [formData.trackingId]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
@@ -133,6 +148,8 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
               <div>
                 <span className="block text-sm font-medium text-gray-600">Tracking ID</span>
                 <p className="text-gray-800 font-mono">{formData.trackingId}</p>
+                <span className="block text-sm font-medium text-gray-600">short(Tracking ID)</span>
+                <p className="text-gray-800 font-mono">{shortId}</p>
               </div>
               <div>
                 <span className="block text-sm font-medium text-gray-600">Courier Partner</span>
@@ -211,6 +228,8 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
               <div>
                 <span className="block text-sm font-medium text-gray-600">Tracking ID</span>
                 <p className="text-gray-800 font-mono">{courier.trackingId}</p>
+                <span className="block text-sm font-medium text-gray-600">short(Tracking ID)</span>
+                <p className="text-gray-800 font-mono">{shortId}</p>
               </div>
               
             </div>
@@ -241,6 +260,8 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
               <div>
                 <span className="block text-sm font-medium text-gray-600">Tracking ID</span>
                 <p className="text-gray-800 font-mono">{formData.trackingId}</p>
+                <span className="block text-sm font-medium text-gray-600">short(Tracking ID)</span>
+                <p className="text-gray-800 font-mono">{shortId}</p>
               </div>
 
               <div>

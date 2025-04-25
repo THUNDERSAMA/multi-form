@@ -273,7 +273,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
             </select>
           </div>
           <div>
-            <label htmlFor="paymentMethod" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
+            {/* <label htmlFor="paymentMethod" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
               Payment Method
             </label>
             <select
@@ -287,7 +287,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
               <option value="prepaid">Prepaid</option>
               <option value="cod">Cash on Delivery (COD)</option>
               
-            </select>
+            </select> */}
           </div>
           <div>
             <label htmlFor="clientInvoice" className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-2">
@@ -409,7 +409,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                   <span className=" text-gray-700 dark:text-gray-50">Shipping Method</span>
                 </label>
 
-                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200  text-gray-700 dark:text-gray-50 cursor-pointer transition-colors duration-200">
+                {/* <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200  text-gray-700 dark:text-gray-50 cursor-pointer transition-colors duration-200">
                   <input
                     type="checkbox"
                     className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
@@ -418,7 +418,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                     onChange={handleConstantFieldChange}
                   />
                   <span className=" text-gray-700 dark:text-gray-50">Payment Method</span>
-                </label>
+                </label> */}
               </div>
             </div>
 
@@ -665,7 +665,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
 
                             {!formData.constantFields.includes("paymentMethod") && (
                               <div>
-                                <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Payment Method</label>
+                                {/* <label className="block text-sm font-medium  text-gray-700 dark:text-gray-50 mb-1">Payment Method</label>
                                 <select
                                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                   value={courier.paymentMethod}
@@ -676,7 +676,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                                 >
                                   <option value="cod">Cash on Delivery</option>
                                   <option value="prepaid">Prepaid</option>
-                                </select>
+                                </select> */}
                               </div>
                             )}
                           </div>
