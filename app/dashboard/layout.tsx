@@ -44,6 +44,11 @@ const navItems: NavItem[] = [
     href: "/dashboard/couriers",
     icon: <PackageSearch className="h-5 w-5" />,
   },
+  {
+    title: "Bulk pod",
+    href: "/dashboard/bulk-pod",
+    icon: <PackageSearch className="h-5 w-5" />,
+  },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

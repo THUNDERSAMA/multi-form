@@ -1,10 +1,11 @@
 "use client"
 import Cookies from 'js-cookie'
 import { useEffect, useState } from "react"
-import { ArrowDown, ArrowUp, BarChart3, Box, Clock, Package, PackageCheck, Truck, Users } from "lucide-react"
+import { ArrowDown, ArrowUp, BarChart3, Box, Clock, FileOutput, Package, PackageCheck, Truck, Users } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/multiform_ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/multiform_ui/tabs"
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 // Mock data for charts
 const dailyDeliveries = [18, 25, 32, 28, 36, 30, 42]
 const weeklyDeliveries = [145, 132, 164, 187, 203, 178, 196]
@@ -279,6 +280,28 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Common tasks and operations</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-2">
+            <Link href="/dashboard/couriers" className="flex items-center p-3 rounded-lg hover:bg-gray-100">
+              <Package className="mr-2 h-5 w-5 text-primary" />
+              <div>
+                <div className="font-medium">Manage Couriers</div>
+                <div className="text-sm text-muted-foreground">View, confirm, or cancel courier bookings</div>
+              </div>
+            </Link>
+            <Link href="/dashboard/bulk-pod" className="flex items-center p-3 rounded-lg hover:bg-gray-100">
+              <FileOutput className="mr-2 h-5 w-5 text-primary" />
+              <div>
+                <div className="font-medium">Generate Bulk PODs</div>
+                <div className="text-sm text-muted-foreground">Create multiple proof of delivery documents</div>
+              </div>
+            </Link>
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader>
             <CardTitle>Recent Deliveries</CardTitle>
@@ -307,34 +330,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Pending Deliveries</CardTitle>
-            <CardDescription>Deliveries in progress</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                { id: "QC7823460", customer: "David Wilson", status: "In Transit", time: "ETA: Today, 2:30 PM" },
-                { id: "QC7823459", customer: "Olivia Taylor", status: "Out for Delivery", time: "ETA: Today, 1:15 PM" },
-                { id: "QC7823458", customer: "Daniel Anderson", status: "Processing", time: "ETA: Tomorrow, 10:00 AM" },
-                { id: "QC7823457", customer: "Ava Martinez", status: "In Transit", time: "ETA: Tomorrow, 3:45 PM" },
-                { id: "QC7823456", customer: "Noah Thomas", status: "Processing", time: "ETA: Apr 15, 11:30 AM" },
-              ].map((delivery) => (
-                <div key={delivery.id} className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">{delivery.id}</p>
-                    <p className="text-xs text-muted-foreground">{delivery.customer}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs font-medium text-blue-500">{delivery.status}</p>
-                    <p className="text-xs text-muted-foreground">{delivery.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        
         <Card>
           <CardHeader>
             <CardTitle>Top Destinations</CardTitle>

@@ -25,57 +25,7 @@ import type { Courier } from "@/lib/courierType"
 import { Console } from "console"
 import { EditParcelDialog } from "./EditParcelDialog"
 import { Toaster } from "@/components/ui/toaster"
-// Mock data for couriers
-const mockCouriers = [
-  {
-    ids: "CR12345678",
-    customerName: "John Doe",
-    pickupAddress: "123 Main St, New York, NY 10001",
-    deliveryAddress: "456 Park Ave, New York, NY 10022",
-    packageType: "Document",
-    status: "pending",
-    date: "2025-04-12",
-    time: "14:30",
-    price: "$25.99",
-    pincode:"700129"
-  },
-  {
-    ids: "CR23456789",
-    customerName: "Jane Smith",
-    pickupAddress: "789 Broadway, New York, NY 10003",
-    deliveryAddress: "101 5th Ave, New York, NY 10011",
-    packageType: "Small Package",
-    status: "pending",
-    date: "2025-04-12",
-    time: "15:45",
-    price: "$32.50",
-    pincode:"700129"
-  },
-  {
-    ids: "CR34567890",
-    customerName: "Robert Johnson",
-    pickupAddress: "222 West St, New York, NY 10014",
-    deliveryAddress: "333 East St, New York, NY 10016",
-    packageType: "Medium Package",
-    status: "confirmed",
-    date: "2025-04-13",
-    time: "09:15",
-    price: "$45.75",
-    pincode:"700129"
-  },
-  {
-    ids: "CR45678901",
-    customerName: "Emily Davis",
-    pickupAddress: "444 North Ave, New York, NY 10018",
-    deliveryAddress: "555 South Blvd, New York, NY 10019",
-    packageType: "Large Package",
-    status: "cancelled",
-    date: "2025-04-13",
-    time: "11:30",
-    price: "$58.25",
-    pincode:"700129"
-  },
-]
+
 
 export default function CouriersPage() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(true)
