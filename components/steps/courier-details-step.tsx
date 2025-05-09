@@ -409,7 +409,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                   <span className=" text-gray-700 dark:text-gray-50">Shipping Method</span>
                 </label>
 
-                {/* <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200  text-gray-700 dark:text-gray-50 cursor-pointer transition-colors duration-200">
+                <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200  text-gray-700 dark:text-gray-50 cursor-pointer transition-colors duration-200">
                   <input
                     type="checkbox"
                     className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
@@ -418,7 +418,7 @@ export default function CourierDetailsStep({ formData, updateFormData, nextStep,
                     onChange={handleConstantFieldChange}
                   />
                   <span className=" text-gray-700 dark:text-gray-50">Payment Method</span>
-                </label> */}
+                </label>
               </div>
             </div>
 

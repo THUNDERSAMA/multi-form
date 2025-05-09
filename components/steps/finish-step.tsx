@@ -76,6 +76,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
           success: true,
           message: "Order submitted successfully! Check the console for the JSON data.",
         })
+        alert("please download the invoice by clicking the button below 😊")
       }
      
     } catch (error) {
@@ -118,7 +119,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block font-medium  text-gray-700 dark:text-gray-50 mb-2">Upload Courier Image</label>
+          <label className="block font-medium  text-gray-700  mb-2">Upload Courier Image</label>
           <input
             type="file"
             accept="image/*"
@@ -335,7 +336,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
             Submit Order
           </button>
         </div>
-
+        <Invoice formData={formData} shortCode={shortId}/>
         {submissionStatus?.success && (
           <div className="flex justify-between mt-6">
             <button
@@ -345,7 +346,7 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
             >
               Toggle JSON View
             </button>
-            <Invoice formData={formData} />
+            
             {/* <pre id="jsonToggle" className="mt-2 hidden bg-gray-100 p-4 rounded overflow-auto max-h-64 text-xs">
               {JSON.stringify(
                 formData,

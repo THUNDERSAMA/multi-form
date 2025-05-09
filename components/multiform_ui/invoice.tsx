@@ -4,9 +4,9 @@ import { useReactToPrint } from "react-to-print";
 import type { FormData } from "../multi-step-form"; // adjust the path as needed
 interface FinishStepProps {
     formData: FormData
-    
+    shortCode: any
   }
-export default function handlePrintInvoice({ formData }: FinishStepProps) {
+export default function handlePrintInvoice({ formData, shortCode }: FinishStepProps) {
     const handlePrintInvoice = (formData: FormData) => {
         const invoiceWindow = window.open("", "_blank", "width=600,height=800");
         if (!invoiceWindow) return
@@ -53,6 +53,7 @@ export default function handlePrintInvoice({ formData }: FinishStepProps) {
                 <div class="text-center mb-2">
                   <h1 class="text-blue-600 text-xl font-bold">courierWallah</h1>
                   <h2 class="text-sm font-semibold uppercase">${formData.courierPartner}</h2>
+                  <p class="text-sm font-semibold">${shortCode}</p>
                 </div>
                 
         <div class

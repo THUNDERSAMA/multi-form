@@ -62,8 +62,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'ID not found' }, { status: 404 });
   }
 
-  const afterYear = fromBase62(encodedAfterYear).toString();
-
+  let afterYear = fromBase62(encodedAfterYear).toString();
+  if(afterYear.length < 12) 
+    afterYear = "0" + afterYear;
   let decodedString = beforeYear + '20' + yearShort + afterYear;
   if (decodedString.length < 12) decodedString = "0" + decodedString;
 

@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/multiform
 
 interface ParcelDetails {
   id: string
+  trackingId: string
   status: "processing" | "in-transit" | "out-for-delivery" | "delivered" | "exception"
   senderName: string
   senderAddress: string
@@ -26,6 +27,10 @@ interface ParcelDetails {
   dimensions: string
   createdAt: string
   estimatedDelivery: string
+  courierimage: string,
+          courierName: string,
+          courierPrice: string,
+          payementType:string,
   history: {
     date: string
     status: string
@@ -57,45 +62,129 @@ export default function ParcelsPage() {
     setError("")
 
     // Simulate API call
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsLoading(false)
       setTrackingId(searchInput)
 
       // Demo data
-      if (searchInput.startsWith("QC")) {
+      // if (searchInput.startsWith("QC")) {
+      //   setParcel({
+      //     id: searchInput,
+      //     status: "in-transit",
+      //     senderName: "John Smith",
+      //     senderAddress: "123 Main St, New York, NY 10001, USA",
+      //     recipientName: "Jane Doe",
+      //     recipientAddress: "456 Market St, San Francisco, CA 94103, USA",
+      //     packageType: "Standard",
+      //     weight: "2.5 kg",
+      //     dimensions: "30 × 20 × 15 cm",
+      //     createdAt: "Apr 10, 2025, 09:45 AM",
+      //     estimatedDelivery: "Apr 15, 2025",
+      //     history: [
+      //       {
+      //         date: "Apr 12, 2025, 10:30 AM",
+      //         status: "In Transit",
+      //         location: "Chicago Distribution Center, IL",
+      //         notes: "Package transferred to long-haul carrier",
+      //       },
+      //       {
+      //         date: "Apr 11, 2025, 02:15 PM",
+      //         status: "In Transit",
+      //         location: "Cleveland Sorting Facility, OH",
+      //       },
+      //       {
+      //         date: "Apr 10, 2025, 09:45 AM",
+      //         status: "Processing",
+      //         location: "New York Processing Center, NY",
+      //         notes: "Package received and processed",
+      //       },
+      //     ],
+      //   })
+      // } 
+      if (searchInput.length > 14) {
+        //fetch parcel details from api
+        const response = await fetch("/api/getbyId", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ trackingId: searchInput }),
+        })
+        
+        const data = await response.json()
+        //console.log("DATA:", data)
+        //console.log("DATA:", data.data)
+        console.log("DATA:", data.data.data)
+        console.log("DATA:", data.data.data.pincode)
+        console.log("DATA:", data.data.dtime)
+        const datas= data.data.data;
         setParcel({
           id: searchInput,
+          trackingId: searchInput,
           status: "in-transit",
-          senderName: "John Smith",
-          senderAddress: "123 Main St, New York, NY 10001, USA",
-          recipientName: "Jane Doe",
-          recipientAddress: "456 Market St, San Francisco, CA 94103, USA",
-          packageType: "Standard",
-          weight: "2.5 kg",
-          dimensions: "30 × 20 × 15 cm",
-          createdAt: "Apr 10, 2025, 09:45 AM",
-          estimatedDelivery: "Apr 15, 2025",
+          senderName: datas.fromAddress.name,
+          senderAddress: datas.fromAddress.address,
+          recipientName: datas.toAddress.name,
+          recipientAddress: datas.toAddress.address,
+          packageType: datas.courierType,
+          weight: datas.courierDetails.weight,
+          dimensions: datas.courierDetails.length + " × " + datas.courierDetails.width + " × " + datas.courierDetails.height,
+          createdAt: data.data.dtime,
+          estimatedDelivery: "",
+          courierimage: datas.courierImage,
+          courierName: datas.courierPartner,
+          courierPrice: datas.courierPrice,
+          payementType: datas.payementType,
           history: [
-            {
-              date: "Apr 12, 2025, 10:30 AM",
-              status: "In Transit",
-              location: "Chicago Distribution Center, IL",
-              notes: "Package transferred to long-haul carrier",
-            },
-            {
-              date: "Apr 11, 2025, 02:15 PM",
-              status: "In Transit",
-              location: "Cleveland Sorting Facility, OH",
-            },
-            {
-              date: "Apr 10, 2025, 09:45 AM",
-              status: "Processing",
-              location: "New York Processing Center, NY",
-              notes: "Package received and processed",
-            },
+            
           ],
         })
-      } else {
+      } 
+      else if (searchInput.length < 14) {
+         //decode the tracking id
+         const deoderesponse = await fetch("/api/decode", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ input: searchInput }),
+        })
+        const deodeddata = await deoderesponse.json()
+        console.log("DATA:", deodeddata.decoded);
+         const decodedId = deodeddata.decoded;
+        const response = await fetch("/api/getbyId", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ trackingId: decodedId }),
+        })
+        
+        const data = await response.json();
+        const datas= data.data.data;
+        setParcel({
+          id: searchInput,
+          trackingId: decodedId,
+          status: "in-transit",
+          senderName: datas.fromAddress.name,
+          senderAddress: datas.fromAddress.address,
+          recipientName: datas.toAddress.name,
+          recipientAddress: datas.toAddress.address,
+          packageType: datas.courierType,
+          weight: datas.courierDetails.weight,
+          dimensions: datas.courierDetails.length + " × " + datas.courierDetails.width + " × " + datas.courierDetails.height,
+          createdAt: data.data.dtime,
+          estimatedDelivery: "",
+          courierimage: datas.courierImage,
+          courierName: datas.courierName,
+          courierPrice: datas.courierPrice,
+          payementType: datas.payementType,
+          history: [
+            
+          ],
+        })
+      } 
+      else {
         setError("No parcel found with this tracking ID")
         setParcel(null)
       }
@@ -244,8 +333,8 @@ export default function ParcelsPage() {
               <Tabs defaultValue="details">
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="details">Details</TabsTrigger>
-                  <TabsTrigger value="tracking">Tracking History</TabsTrigger>
-                  <TabsTrigger value="update">Update Status</TabsTrigger>
+                  {/* <TabsTrigger value="tracking">Tracking History</TabsTrigger>
+                  <TabsTrigger value="update">Update Status</TabsTrigger> */}
                 </TabsList>
                 <TabsContent value="details" className="space-y-6">
                   <div className="grid gap-6 md:grid-cols-2">
@@ -278,18 +367,60 @@ export default function ParcelsPage() {
                           </CardContent>
                         </Card>
                       </div>
+                       <div>
+                        <h3 className="mb-2 text-lg font-medium">Courier image</h3>
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-start gap-3">
+                              <img src={parcel.courierimage} alt="Courier" className="h-auto w-auto rounded-md" />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
                     </div>
                     <div className="space-y-4">
                       <div>
                         <h3 className="mb-2 text-lg font-medium">Package Information</h3>
                         <Card>
                           <CardContent className="p-4 space-y-4">
+                              <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <Search className="h-5 w-5 text-muted-foreground" />
+                                <span className="text-sm">Tracking id</span>
+                              </div>
+                              <span className="text-sm font-medium">{parcel.trackingId}</span>
+                            </div>
+                            <Separator />
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 <Package className="h-5 w-5 text-muted-foreground" />
                                 <span className="text-sm">Package Type</span>
                               </div>
                               <span className="text-sm font-medium">{parcel.packageType}</span>
+                            </div>
+                            <Separator />
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <Package className="h-5 w-5 text-muted-foreground" />
+                                <span className="text-sm">Payment method</span>
+                              </div>
+                              <span className="text-sm font-medium">{parcel.packageType}</span>
+                            </div>
+                            <Separator />
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <Package className="h-5 w-5 text-muted-foreground" />
+                                <span className="text-sm">courier name</span>
+                              </div>
+                              <span className="text-sm font-medium">{parcel.courierName}</span>
+                            </div>
+                            <Separator />
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <Package className="h-5 w-5 text-muted-foreground" />
+                                <span className="text-sm">courier price</span>
+                              </div>
+                              <span className="text-sm font-medium">{parcel.courierPrice}</span>
                             </div>
                             <Separator />
                             <div className="flex items-center justify-between">
@@ -345,7 +476,7 @@ export default function ParcelsPage() {
                     </div>
                   </div>
                 </TabsContent>
-                <TabsContent value="tracking" className="space-y-4">
+                {/* <TabsContent value="tracking" className="space-y-4">
                   <Card>
                     <CardHeader>
                       <CardTitle>Tracking History</CardTitle>
@@ -377,8 +508,8 @@ export default function ParcelsPage() {
                       </div>
                     </CardContent>
                   </Card>
-                </TabsContent>
-                <TabsContent value="update" className="space-y-4">
+                </TabsContent> */}
+                {/* <TabsContent value="update" className="space-y-4">
                   <Card>
                     <CardHeader>
                       <CardTitle>Update Parcel Status</CardTitle>
@@ -428,7 +559,7 @@ export default function ParcelsPage() {
                       </Button>
                     </CardFooter>
                   </Card>
-                </TabsContent>
+                </TabsContent> */}
               </Tabs>
             </CardContent>
           </Card>

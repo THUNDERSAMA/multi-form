@@ -47,7 +47,7 @@ export default function FromAddressStep({ formData, updateFormData, nextStep, pr
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-      <h3 className="text-2xl font-semibold mb-6 text-gray-800">Sender Address</h3>
+      <h3 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-50">Sender Address</h3>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="col-span-2">
