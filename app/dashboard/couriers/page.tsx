@@ -74,15 +74,52 @@ try { const response = await fetch("/api/getData")
     }
   }
 
-  const handleConfirmCourier = (id: any) => {
+  const handleConfirmCourier = async (id: any) => {
    // setCouriers(couriers.map((courier) => (courier.id === id ? { ...courier, status: 1 } : courier)))
+    
    console.log("Confirming courier with ID:", id)
-    setDetailsOpen(false)
+    // Call the API to confirm the courier
+    const response = await fetch("/api/updateData", {
+      method: "POST",
+      body: JSON.stringify({ id, status: "confirm" }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    if (!response.ok) {
+      console.error("Error confirming courier:", response.statusText)
+      return
+    }
+    const data = await response.json()
+    if (data.data.status === "success") {
+      console.log("Courier confirmed successfully")
+      alert("Courier confirmed successfully")
+    setDetailsOpen(false) 
+    }
+   
   }
 
-  const handleCancelCourier = (id: any) => {
+  const handleCancelCourier = async (id: any) => {
    // setCouriers(couriers.map((courier) => (courier.id === id ? { ...courier, status: 2 } : courier)))
-    setDetailsOpen(false)
+   console.log("Confirming courier with ID:", id)
+   // Call the API to confirm the courier
+    const response = await fetch("/api/updateData", {
+      method: "POST",
+      body: JSON.stringify({ id, status: "cancel" }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    if (!response.ok) {
+      console.error("Error confirming courier:", response.statusText)
+      return
+    }
+    const data = await response.json()
+    if (data.data.status === "success") {
+      console.log("Courier cancelled successfully")
+      alert("Courier cancelled successfully")
+    setDetailsOpen(false) 
+    }
   }
   const handleEditCourier = (id: any) => {
     setParcelIdToEdit(id)
@@ -213,7 +250,7 @@ try { const response = await fetch("/api/getData")
 
         <TabsContent value="pending" className="space-y-4">
           {couriers
-            .filter((c) => c.status === 0)
+            .filter((c) => c.status.toString() === '0')
             .map((courier) => (
               <CourierCard
                 key={courier.id}
@@ -230,7 +267,7 @@ try { const response = await fetch("/api/getData")
 
         <TabsContent value="confirmed" className="space-y-4">
           {couriers
-            .filter((c) => c.status == 1)
+            .filter((c) => c.status.toString() === '1')
             .map((courier) => (
               <CourierCard
                 key={courier.id}
@@ -247,7 +284,7 @@ try { const response = await fetch("/api/getData")
 
         <TabsContent value="cancelled" className="space-y-4">
           {couriers
-            .filter((c) => c.status ==2)
+            .filter((c) => c.status.toString() === '2')
             .map((courier) => (
               <CourierCard
                 key={courier.id}
@@ -433,7 +470,9 @@ function CourierCard({
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <div className="font-medium">{parsedData.courierPrice}</div>
+        <div className="font-medium">
+          <span className="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">
+            ₹{parsedData.courierPrice}</span></div>
         <div className="flex gap-2">
         <Button variant="outline" size="sm" onClick={onEdit} className="flex items-center gap-1">
             <Edit size={14} /> Edit

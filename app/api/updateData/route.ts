@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 async function cancelParcel(id : string) {
     // Function to cancel the parcel
-    const resp = await fetch('https://courierwallah.in/api/submit.php', {
+    const resp = await fetch('https://courierwallah.in/api/updatestatus.php', {
         method: 'POST',
         body: JSON.stringify({ id, status: "cancel" }),
         headers: {
@@ -19,9 +19,9 @@ async function cancelParcel(id : string) {
 }
 async function confirmParcel(id : string) {
     // Function to confirm the parcel
-    const resp = await fetch('https://courierwallah.in/api/submit.php', {
+    const resp = await fetch('https://courierwallah.in/api/updatestatus.php', {
         method: 'POST',
-        body: JSON.stringify({ id, status: "cancel" }),
+        body: JSON.stringify({ id, status: "confirm" }),
         headers: {
             "Content-Type": "application/json",
           },
