@@ -54,6 +54,7 @@ export default function handlePrintInvoice({ formData, shortCode }: FinishStepPr
                   <h1 class="text-blue-600 text-xl font-bold">courierWallah</h1>
                   <h2 class="text-sm font-semibold uppercase">${formData.courierPartner}</h2>
                   <p class="text-sm font-semibold">${shortCode}</p>
+                  <p class="text-sm font-semibold">₹${formData.courierPrice}</p>
                 </div>
                 
         <div class
