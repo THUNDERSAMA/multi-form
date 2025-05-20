@@ -44,7 +44,7 @@ export function PODTemplate({ courier }: { courier: Courier }) {
         {/* Header */}
         <div className="flex border-b-2 border-blue-700">
           <div className="w-1/3 p-2 border-r-2 border-blue-700">
-            <h2 className="text-2xl font-bold text-blue-700">DELIVERY NOTE (POD)</h2>
+            <h2 className="text-2xl font-bold text-blue-700">POD COPY</h2>
             <Image
               src="/logo-black.png"
                 alt="Logo"

@@ -225,7 +225,7 @@ try { const response = await fetch("/api/getData")
     <div className="container mx-auto py-6">
       <h1 className="text-3xl font-bold mb-6">Courier Bookings</h1>
 
-      <Tabs defaultValue="all" className="w-full">
+      <Tabs defaultValue="pending" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
