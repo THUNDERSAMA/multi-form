@@ -14,7 +14,6 @@ interface TrackingResult {
   id: string
   status: "in-transit" | "delivered" | "processing" | "out-for-delivery"
   location: string
-  estimatedDelivery: string
   history: {
     date: string
     status: string
@@ -27,8 +26,20 @@ export default function TrackPage() {
   const [result, setResult] = useState<TrackingResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-
-  const handleSubmit = (e: React.FormEvent) => {
+  function getCurrentDateTime(timestamp: string) {
+    const date = new Date(timestamp.replace(" ", "T"));
+const options: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "long",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+};
+const formattedDate = date.toLocaleString("en-US", options).replace(",", " -");
+    return formattedDate;
+  }
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
@@ -40,37 +51,138 @@ export default function TrackPage() {
     setIsLoading(true)
 
     // Simulate API call
-    setTimeout(() => {
-      if (trackingNumber.toLowerCase() === "qc1234567890") {
-        setResult({
-          id: "QC1234567890",
-          status: "in-transit",
-          location: "Distribution Center, New York",
-          estimatedDelivery: "April 15, 2025",
+    
+      if (trackingNumber.length > 14) {
+        //fetch parcel details from api
+        const response = await fetch("/api/getbyId", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ trackingId: trackingNumber }),
+        })
+        
+        const data = await response.json()
+        //console.log("DATA:", data)
+        //console.log("DATA:", data.data)
+       // console.log("DATA:", data.data.data)
+       // console.log("DATA:", data.data.data.pincode)
+        console.log("DATA:", data.data.id)
+        
+        const datas= data.data.data;
+      if (data.data.delivered==1)
+      {
+         setResult({
+          id: trackingNumber,
+          status: data.data.delivered==0?"in-transit":"delivered",
+          location: datas.fromAddress.address,
+          
           history: [
             {
-              date: "April 12, 2025 - 09:30 AM",
+              date: getCurrentDateTime(data.data.dtime),
               status: "In Transit",
-              location: "Distribution Center, New York",
+              location: "kolkata, West Bengal",
             },
+            
             {
-              date: "April 11, 2025 - 02:15 PM",
-              status: "Package Processed",
-              location: "Sorting Facility, Boston",
-            },
-            {
-              date: "April 10, 2025 - 10:45 AM",
-              status: "Package Received",
-              location: "courierWallah Facility, Boston",
+              date: getCurrentDateTime(data.data.data_time_delv),
+              status: "Package delivered",
+              location: datas.toAddress.address,
             },
           ],
         })
-      } else {
-        setError("No package found with this tracking number. Please check and try again.")
+      }
+      else{
+          setResult({
+          id: trackingNumber,
+          status: data.data.delivered==0?"in-transit":"delivered",
+          location: datas.fromAddress.address,
+          
+          history: [
+            {
+              date: getCurrentDateTime(data.data.dtime),
+              status: "In Transit",
+              location: "kolkata, West Bengal",
+            },
+            
+            
+          ],
+        })
+      }
+      } 
+      else if (trackingNumber.length < 14) {
+         //decode the tracking id
+         const deoderesponse = await fetch("/api/decode", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ input: trackingNumber }),
+        })
+        const deodeddata = await deoderesponse.json()
+        console.log("DATA:", deodeddata.decoded);
+         const decodedId = deodeddata.decoded;
+        const response = await fetch("/api/getbyId", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ trackingId: decodedId }),
+        })
+        
+        const data = await response.json();
+         console.log("DATA:", data.data.id)
+       
+        const datas= data.data.data;
+      
+          if (data.data.delivered==1)
+      {
+         setResult({
+          id: trackingNumber,
+          status: data.data.delivered==0?"in-transit":"delivered",
+          location: datas.fromAddress.address,
+          
+          history: [
+            {
+              date: getCurrentDateTime(data.data.dtime),
+              status: "In Transit",
+              location: "kolkata, West Bengal",
+            },
+            
+            {
+              date: getCurrentDateTime(data.data.data_time_delv),
+              status: "Package delivered",
+              location: datas.toAddress.address,
+            },
+          ],
+        })
+      }
+      else{
+          setResult({
+          id: trackingNumber,
+          status: data.data.delivered==0?"in-transit":"delivered",
+          location: datas.fromAddress.address,
+          
+          history: [
+            {
+              date: getCurrentDateTime(data.data.dtime),
+              status: "In Transit",
+              location: "kolkata, West Bengal",
+            },
+            
+            
+          ],
+        })
+      }
+      } 
+      else {
+        setError("No parcel found with this tracking ID")
         setResult(null)
       }
+       
+      
       setIsLoading(false)
-    }, 1500)
+    
   }
 
   const getStatusColor = (status: string) => {
@@ -156,10 +268,7 @@ export default function TrackPage() {
                       <p className="text-sm font-medium">Current Location</p>
                       <p className="text-sm text-muted-foreground">{result.location}</p>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">Estimated Delivery</p>
-                      <p className="text-sm text-muted-foreground">{result.estimatedDelivery}</p>
-                    </div>
+                   
                   </div>
                 </div>
 

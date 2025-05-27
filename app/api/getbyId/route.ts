@@ -24,7 +24,7 @@ export async function POST(req: { json: () => any }) {
           resp.headers.get("content-type"),
         );
         const rawText = await resp.text();
-         console.log("raw response:",rawText);
+        // console.log("raw response:",rawText);
             const data =JSON.parse(rawText);
             return NextResponse.json({ data })
 }

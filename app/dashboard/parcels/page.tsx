@@ -51,56 +51,22 @@ export default function ParcelsPage() {
   const [newStatus, setNewStatus] = useState("in-transit")
   const [newLocation, setNewLocation] = useState("")
   const [newNotes, setNewNotes] = useState("")
-
-  const handleSearch = () => {
+  const [id, setId] = useState(0)
+  const handleSearch = async () => {
     if (!searchInput.trim()) {
       setError("Please enter a tracking ID")
       return
     }
 
     setIsLoading(true)
-    setError("")
+    //setError("")
 
     // Simulate API call
-    setTimeout(async () => {
-      setIsLoading(false)
+    
+      
       setTrackingId(searchInput)
 
-      // Demo data
-      // if (searchInput.startsWith("QC")) {
-      //   setParcel({
-      //     id: searchInput,
-      //     status: "in-transit",
-      //     senderName: "John Smith",
-      //     senderAddress: "123 Main St, New York, NY 10001, USA",
-      //     recipientName: "Jane Doe",
-      //     recipientAddress: "456 Market St, San Francisco, CA 94103, USA",
-      //     packageType: "Standard",
-      //     weight: "2.5 kg",
-      //     dimensions: "30 × 20 × 15 cm",
-      //     createdAt: "Apr 10, 2025, 09:45 AM",
-      //     estimatedDelivery: "Apr 15, 2025",
-      //     history: [
-      //       {
-      //         date: "Apr 12, 2025, 10:30 AM",
-      //         status: "In Transit",
-      //         location: "Chicago Distribution Center, IL",
-      //         notes: "Package transferred to long-haul carrier",
-      //       },
-      //       {
-      //         date: "Apr 11, 2025, 02:15 PM",
-      //         status: "In Transit",
-      //         location: "Cleveland Sorting Facility, OH",
-      //       },
-      //       {
-      //         date: "Apr 10, 2025, 09:45 AM",
-      //         status: "Processing",
-      //         location: "New York Processing Center, NY",
-      //         notes: "Package received and processed",
-      //       },
-      //     ],
-      //   })
-      // } 
+      
       if (searchInput.length > 14) {
         //fetch parcel details from api
         const response = await fetch("/api/getbyId", {
@@ -114,14 +80,15 @@ export default function ParcelsPage() {
         const data = await response.json()
         //console.log("DATA:", data)
         //console.log("DATA:", data.data)
-        console.log("DATA:", data.data.data)
-        console.log("DATA:", data.data.data.pincode)
-        console.log("DATA:", data.data.dtime)
+       // console.log("DATA:", data.data.data)
+       // console.log("DATA:", data.data.data.pincode)
+        console.log("DATA:", data.data.id)
+        setId(data.data.id)
         const datas= data.data.data;
         setParcel({
           id: searchInput,
           trackingId: searchInput,
-          status: "in-transit",
+          status: data.data.delivered==0?"in-transit":"delivered",
           senderName: datas.fromAddress.name,
           senderAddress: datas.fromAddress.address,
           recipientName: datas.toAddress.name,
@@ -161,11 +128,13 @@ export default function ParcelsPage() {
         })
         
         const data = await response.json();
+         console.log("DATA:", data.data.id)
+        setId(data.data.id)
         const datas= data.data.data;
         setParcel({
           id: searchInput,
           trackingId: decodedId,
-          status: "in-transit",
+          status: data.data.delivered==0?"in-transit":"delivered",
           senderName: datas.fromAddress.name,
           senderAddress: datas.fromAddress.address,
           recipientName: datas.toAddress.name,
@@ -188,7 +157,7 @@ export default function ParcelsPage() {
         setError("No parcel found with this tracking ID")
         setParcel(null)
       }
-    }, 1000)
+   setIsLoading(false)
   }
 
   const handleUpdateStatus = () => {
@@ -257,6 +226,49 @@ export default function ParcelsPage() {
     }
   }
 
+  const handleToogle = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const isChecked = event.target.checked;
+    if (!isChecked) {
+  const response = await fetch("/api/updateData", {
+      method: "POST",
+      body: JSON.stringify({ id, status: "not-delivered" }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    if (!response.ok) {
+      console.error("Error confirming courier:", response.statusText)
+      return
+    }
+    const data = await response.json()
+    if (data.data.status === "success") {
+      console.log("Courier set to transit")
+      alert("Courier set to transit")
+     
+    }
+    }
+    else {
+      const response = await fetch("/api/updateData", {
+      method: "POST",
+      body: JSON.stringify({ id, status: "delivered" }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    if (!response.ok) {
+      console.error("Error confirming courier:", response.statusText)
+      return
+    }
+    const data = await response.json()
+    if (data.data.status === "success") {
+      console.log("Courier set to delivered")
+      alert("Courier set to delivered")
+     
+    }
+      console.log("Parcel is delivered");
+     
+    }
+  }
   return (
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -469,6 +481,17 @@ export default function ParcelsPage() {
                               <span className={`text-sm font-medium ${getStatusColor(parcel.status)}`}>
                                 {parcel.status.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                               </span>
+                              <label className="inline-flex items-center me-5 cursor-pointer">
+  <input
+    type="checkbox"
+    value="delivered"
+    className="sr-only peer"
+    defaultChecked={parcel.status !== "in-transit"}
+    onChange={handleToogle}
+  />
+  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
+  <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Delivered</span>
+</label>
                             </div>
                           </CardContent>
                         </Card>
