@@ -273,7 +273,7 @@ export default function ParcelsPage() {
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <h1 className="text-3xl font-bold tracking-tight">Parcel Details</h1>
-        {parcel && (
+        {/* {parcel && (
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm">
               <Printer className="mr-2 h-4 w-4" />
@@ -284,7 +284,7 @@ export default function ParcelsPage() {
               Export
             </Button>
           </div>
-        )}
+        )} */}
       </div>
 
       <Card>
@@ -297,7 +297,7 @@ export default function ParcelsPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Enter tracking ID (e.g., QC1234567890)"
+                placeholder="Enter tracking ID (e.g., ELEUgh2025047606494892)"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10"
@@ -308,7 +308,7 @@ export default function ParcelsPage() {
             </Button>
           </div>
           {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
-          <p className="mt-2 text-xs text-muted-foreground">Try using any ID starting with "QC" for demo results</p>
+          
         </CardContent>
       </Card>
 

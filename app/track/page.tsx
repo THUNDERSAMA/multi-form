@@ -227,7 +227,7 @@ const formattedDate = date.toLocaleString("en-US", options).replace(",", " -");
                 <div className="flex gap-2">
                   <Input
                     id="tracking-number"
-                    placeholder="e.g., QC1234567890"
+                    placeholder="e.g., ELEUgh2025047606494892"
                     value={trackingNumber}
                     onChange={(e) => setTrackingNumber(e.target.value)}
                   />
@@ -242,7 +242,7 @@ const formattedDate = date.toLocaleString("en-US", options).replace(",", " -");
                   </Button>
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
-                <p className="text-xs text-muted-foreground">Try using "QC1234567890" for a demo result</p>
+                
               </div>
             </form>
 
