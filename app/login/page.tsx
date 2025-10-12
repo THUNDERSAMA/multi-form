@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/multiform_ui/input"
 import { Label } from "@/components/multiform_ui/label"
 import Cookies from 'js-cookie'
+import { toast } from "sonner"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -46,7 +47,7 @@ export default function LoginPage() {
       setIsLoading(false)
        //check if the email and password are correct
        try {
-        const response = await fetch('/api/auth', {
+        const responsePromise =  fetch('/api/auth', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -56,7 +57,12 @@ export default function LoginPage() {
             password,
           }),
         })
-  
+        toast.promise(responsePromise, {
+  loading: 'Signing in...',
+  success: 'Sign in successfully! 👌',
+  error: 'Error',
+});
+        const response = await responsePromise
         if (!response.ok) setError("Invalid email or password")
         if (response.status === 401) {
           setError("Invalid email or password")
