@@ -58,13 +58,7 @@ const responsePromise = fetch("/api/submit", {
   body: JSON.stringify(formDataJson),
 });
 
-toast.promise(responsePromise, 
-  {
-      pending: 'Submitting your order...',
-      success: 'order submitted 👌',
-      error: 'order not submitted 🤯'
-    }
-);
+
 toast.promise(responsePromise, {
   loading: 'Submitting your order...',
   success: 'Order submitted successfully! 👌',

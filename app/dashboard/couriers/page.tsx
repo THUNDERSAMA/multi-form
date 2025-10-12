@@ -26,6 +26,8 @@ import { Console } from "console"
 import { EditParcelDialog } from "./EditParcelDialog"
 //import { Toaster } from "@/components/ui/toaster"
  import { Toaster, toast } from 'sonner';
+import DeliveryCardSkeleton from "@/components/loader/deliverySkeleton"
+import Invoice from "@/components/multiform_ui/invoice"
 
 
 export default function CouriersPage() {
@@ -41,6 +43,7 @@ export default function CouriersPage() {
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [courierToEdit, setCourierToEdit] = useState<(Courier[])[0] | null>(null)
   const [parcelIdToEdit, setParcelIdToEdit] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   // Correct password for this demo
   const CORRECT_PASSWORD = "123"
 
@@ -51,12 +54,14 @@ export default function CouriersPage() {
   }, [])
   useEffect(() => {
     // get couriers from api
+    setIsLoading(true);
     const fetchCouriers = async () => {
 try { const response = await fetch("/api/getData")
       
       const data = await response.json()
       console.log("Response:", data)
       setCouriers(data.data)
+      setIsLoading(false);
     }
     catch (error) {
       console.error("Error fetching couriers:", error)
@@ -237,7 +242,17 @@ try { const response = await fetch("/api/getData")
           <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
           <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
         </TabsList>
+         { (isLoading) ? (
+        
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1"> 
+              {[...Array(8)].map((_, index) => (
+                <DeliveryCardSkeleton key={index}/>
+              ))}
+            </div>
 
+          ) : (
+            
+              <>
         <TabsContent value="all" className=" grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
           {couriers.map((courier) => (
             <CourierCard
@@ -303,6 +318,8 @@ try { const response = await fetch("/api/getData")
               />
             ))}
         </TabsContent>
+        </>
+          )}
       </Tabs>
 
       {/* Courier Details Dialog */}
@@ -387,6 +404,11 @@ try { const response = await fetch("/api/getData")
                 <Button onClick={generatePOD} className="flex items-center gap-2">
                   <FileText size={16} /> Generate POD
                 </Button>
+                 
+              </div>
+              <div className="flex gap-2 ml-auto">
+
+                <Invoice formData={parsedData} shortCode={parsedData.shortTrackingId}/>
               </div>
             </DialogFooter>
           </>
