@@ -136,7 +136,6 @@ export default function LoginPage() {
               </Button>
             </form>
             <div className="mt-4 text-center text-xs text-muted-foreground">
-              <p>Demo credentials: admin@quantum.com / password</p>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">

@@ -25,7 +25,7 @@ export default function CourierTypeStep({ formData, updateFormData, nextStep, pr
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`bg-white rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
+            className={`bg-white dark:bg-white/10 dark:backdrop-blur-lg  dark:border-white/20 dark:text-gray-100 rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
               formData.courierType === "parcel"
                 ? "border-4 border-indigo-500 shadow-md"
                 : "border border-gray-200 hover:shadow-md"
@@ -49,8 +49,8 @@ export default function CourierTypeStep({ formData, updateFormData, nextStep, pr
                   />
                 </svg>
               </div>
-              <h5 className="font-medium text-lg text-gray-800 mb-2">Parcel</h5>
-              <p className="text-gray-600">Send packages, goods, or physical items</p>
+              <h5 className="font-medium text-lg text-gray-800 mb-2 dark:text-gray-100">Parcel</h5>
+              <p className="text-gray-600 dark:text-gray-200">Send packages, goods, or physical items</p>
               {formData.courierType === "parcel" && (
                 <div className="absolute top-3 right-3">
                   <span className="flex items-center justify-center w-6 h-6 bg-indigo-500 text-white rounded-full">
@@ -70,7 +70,7 @@ export default function CourierTypeStep({ formData, updateFormData, nextStep, pr
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`bg-white rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
+            className={`bg-white dark:bg-white/10 dark:backdrop-blur-lg  dark:border-white/20 dark:text-gray-100 rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
               formData.courierType === "document"
                 ? "border-4 border-indigo-500 shadow-md"
                 : "border border-gray-200 hover:shadow-md"
@@ -94,8 +94,8 @@ export default function CourierTypeStep({ formData, updateFormData, nextStep, pr
                   />
                 </svg>
               </div>
-              <h5 className="font-medium text-lg text-gray-800 mb-2">Document</h5>
-              <p className="text-gray-600">Send letters, documents, or paperwork</p>
+              <h5 className="font-medium text-lg text-gray-800 mb-2 dark:text-gray-100">Document</h5>
+              <p className="text-gray-600 dark:text-gray-200">Send letters, documents, or paperwork</p>
               {formData.courierType === "document" && (
                 <div className="absolute top-3 right-3">
                   <span className="flex items-center justify-center w-6 h-6 bg-indigo-500 text-white rounded-full">

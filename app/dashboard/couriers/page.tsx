@@ -24,7 +24,8 @@ import PODTemplate from "./pod-template"
 import type { Courier } from "@/lib/courierType"
 import { Console } from "console"
 import { EditParcelDialog } from "./EditParcelDialog"
-import { Toaster } from "@/components/ui/toaster"
+//import { Toaster } from "@/components/ui/toaster"
+ import { Toaster, toast } from 'sonner';
 
 
 export default function CouriersPage() {
@@ -93,8 +94,10 @@ try { const response = await fetch("/api/getData")
     const data = await response.json()
     if (data.data.status === "success") {
       console.log("Courier confirmed successfully")
-      alert("Courier confirmed successfully")
+      toast.success("Courier confirmed successfully ✅")
+
     setDetailsOpen(false) 
+    router.refresh();
     }
    
   }
@@ -117,8 +120,10 @@ try { const response = await fetch("/api/getData")
     const data = await response.json()
     if (data.data.status === "success") {
       console.log("Courier cancelled successfully")
-      alert("Courier cancelled successfully")
+      
+      toast.success("Courier cancelled ❌ successfully ")
     setDetailsOpen(false) 
+    router.refresh();
     }
   }
   const handleEditCourier = (id: any) => {
@@ -233,7 +238,7 @@ try { const response = await fetch("/api/getData")
           <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="space-y-4">
+        <TabsContent value="all" className=" grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
           {couriers.map((courier) => (
             <CourierCard
               key={courier.id}
@@ -248,7 +253,7 @@ try { const response = await fetch("/api/getData")
           ))}
         </TabsContent>
 
-        <TabsContent value="pending" className="space-y-4">
+        <TabsContent value="pending" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
           {couriers
             .filter((c) => c.status.toString() === '0')
             .map((courier) => (
@@ -265,7 +270,7 @@ try { const response = await fetch("/api/getData")
             ))}
         </TabsContent>
 
-        <TabsContent value="confirmed" className="space-y-4">
+        <TabsContent value="confirmed" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
           {couriers
             .filter((c) => c.status.toString() === '1')
             .map((courier) => (
@@ -282,7 +287,7 @@ try { const response = await fetch("/api/getData")
             ))}
         </TabsContent>
 
-        <TabsContent value="cancelled" className="space-y-4">
+        <TabsContent value="cancelled" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
           {couriers
             .filter((c) => c.status.toString() === '2')
             .map((courier) => (
@@ -424,7 +429,7 @@ try { const response = await fetch("/api/getData")
         />
       )}
 
-      <Toaster />
+      {/* <Toaster /> */}
     </div>
   )
 }
@@ -442,44 +447,50 @@ function CourierCard({
   statusBadge: React.ReactNode
 }) { const parsedData = typeof courier.data === 'string' ? JSON.parse(courier.data) : courier.data;
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle>{parsedData.toAddress.address}</CardTitle>
+    <Card className="w-90 h-72 flex flex-col">
+      <CardHeader className="pb-3">
+        <div className="flex justify-between items-start gap-2">
+          <CardTitle className="text-base font-semibold leading-tight line-clamp-2">
+            {parsedData.toAddress.address}
+          </CardTitle>
           {statusBadge}
         </div>
-        <CardDescription className="flex items-center gap-1">
-          <Clock size={14} />
-          {courier.date_time} 
+        <CardDescription className="flex items-center gap-1 text-xs mt-1">
+          <Clock size={12} />
+          {courier.date_time}
         </CardDescription>
       </CardHeader>
-      <CardContent className="pb-2">
-        <div className="grid gap-2">
-          <div>
-            <span className="text-sm font-medium">Pickup:</span> {parsedData.fromAddress.address}
+      
+      <CardContent className="pb-3 space-y-2 flex-1 overflow-hidden">
+        <div className="text-sm">
+          <span className="text-muted-foreground text-xs">From:</span>
+          <p className="font-medium line-clamp-1">{parsedData.fromAddress.address}</p>
+        </div>
+        
+        <div className="flex gap-4 text-xs">
+          <div className="flex-1 min-w-0">
+            <span className="text-muted-foreground">Package:</span>
+            <p className="font-medium truncate">{parsedData.courierType}</p>
           </div>
-          <div>
-            <span className="text-sm font-medium">Delivery:</span> {parsedData.toAddress.address}
-          </div>
-          <div>
-            <span className="text-sm font-medium">Package:</span> {parsedData.courierType}
-          </div>
-          <div>
-            <span className="text-sm font-medium">Partner:</span> {parsedData.courierPartner}
+          <div className="flex-1 min-w-0">
+            <span className="text-muted-foreground">Partner:</span>
+            <p className="font-medium truncate">{parsedData.courierPartner}</p>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <div className="font-medium">
-          <span className="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">
-            ₹{parsedData.courierPrice}</span></div>
+      
+      <CardFooter className="flex justify-between items-center pt-3 border-t">
+        <span className="bg-green-100 text-green-800 text-sm font-semibold px-2.5 py-1 rounded dark:bg-green-900 dark:text-green-300">
+          ₹{parsedData.courierPrice}
+        </span>
+        
         <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={onEdit} className="flex items-center gap-1">
-            <Edit size={14} /> Edit
+          <Button variant="ghost" size="sm" onClick={onEdit} className="h-8 px-2">
+            <Edit size={14} />
           </Button>
-        <Button variant="outline" onClick={onViewDetails}>
-          View Details
-        </Button>
+          <Button variant="outline" size="sm" onClick={onViewDetails} className="h-8 text-xs">
+            Details
+          </Button>
         </div>
       </CardFooter>
     </Card>

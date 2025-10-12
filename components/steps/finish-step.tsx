@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import type { FormData } from "../multi-step-form"
 import Invoice from "../multiform_ui/invoice"
 import { encode } from "../encoder"
+import { Toaster, toast } from 'sonner';
 interface FinishStepProps {
   formData: FormData
   updateFormData: (data: Partial<FormData>) => void
@@ -25,6 +26,8 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
       });
       const data = await res.json();
       setShortId(data.encoded); // this assumes { encoded: "..." } is returned
+      //formData.shortTrackingId=data.encoded;
+      updateFormData({ shortTrackingId: data.encoded });
     };
 
     if (formData.trackingId) getEncoded();
@@ -47,37 +50,54 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
         2
       )
      // console.log("Form data JSON:", formDataJson)
-      const response = await fetch("/api/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formDataJson),
-      })
-      if (response.status === 300) {
-        setSubmissionStatus({
-          success: false,
-          message: "Order not submitted! Duplicate order.",
-        });
-      } else if (response.status === 401) {
-        setSubmissionStatus({
-          success: false,
-          message: "Order not submitted! Please try again.",
-        });
-      } else if (response.ok) {
-        setSubmissionStatus({
-          success: true,
-          message: "Order submitted successfully!",
-        });
-      }
-      else
-      {
-        setSubmissionStatus({
-          success: true,
-          message: "Order submitted successfully! Check the console for the JSON data.",
-        })
-        alert("please download the invoice by clicking the button below 😊")
-      }
+const responsePromise = fetch("/api/submit", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(formDataJson),
+});
+
+toast.promise(responsePromise, 
+  {
+      pending: 'Submitting your order...',
+      success: 'order submitted 👌',
+      error: 'order not submitted 🤯'
+    }
+);
+toast.promise(responsePromise, {
+  loading: 'Submitting your order...',
+  success: 'Order submitted successfully! 👌',
+  error: 'Error',
+});
+
+const response = await responsePromise;
+if (response.status === 300) {
+  setSubmissionStatus({
+    success: false,
+    message: "Order not submitted! Duplicate order.",
+  });
+} else if (response.status === 401) {
+  setSubmissionStatus({
+    success: false,
+    message: "Order not submitted! Please try again.",
+  });
+} else if (response.ok) {
+  setSubmissionStatus({
+    success: true,
+    message: "Order submitted successfully!",
+  });
+  toast.success('Submitted....');
+  //alert("");
+}
+else
+{
+  setSubmissionStatus({
+    success: true,
+    message: "Order submitted successfully! Check the console .",
+  })
+  alert("please download the invoice by clicking the button below 😊")
+}
      
     } catch (error) {
       console.error("Error converting form data to JSON:", error)

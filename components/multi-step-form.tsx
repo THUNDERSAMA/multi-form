@@ -183,7 +183,7 @@ export default function MultiStepForm() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl dark:bg-gray-800 dark:shadow-gray-700">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl dark:bg-muted ">
       <div className="p-6 md:p-8">
         <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
         <div className="transition-opacity duration-300">{renderStep()}</div>

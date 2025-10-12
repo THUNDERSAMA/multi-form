@@ -68,7 +68,7 @@ export default function CourierPartnerStep({ formData, updateFormData, nextStep,
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               key={partner.id}
-              className={`bg-white rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
+              className={`bg-white dark:bg-white/10 dark:backdrop-blur-lg  dark:border-white/20 dark:text-gray-100 rounded-xl p-6 shadow-sm cursor-pointer transition-all duration-200 ${
                 formData.courierPartner === partner.id
                   ? "border-spacing-2 border-4 border-indigo-500 shadow-md"
                   : "border border-gray-200 hover:shadow-md"
@@ -77,7 +77,7 @@ export default function CourierPartnerStep({ formData, updateFormData, nextStep,
             >
               <div className="flex flex-col items-center justify-center">
                 <img src={partner.logo || "/placeholder.svg"} alt={partner.name} className="mb-4 h-16 object-contain" />
-                <h5 className="font-medium text-gray-800">{partner.name}</h5>
+                <h5 className="font-medium text-gray-800 dark:text-gray-100">{partner.name}</h5>
                 {formData.courierPartner === partner.id && (
                   <div className="absolute top-3 right-3">
                     <span className="flex items-center justify-center w-6 h-6 bg-indigo-500 text-white rounded-full">

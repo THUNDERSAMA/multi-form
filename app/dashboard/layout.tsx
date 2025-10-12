@@ -11,6 +11,7 @@ import { Button } from "@/components/multiform_ui/button"
 import { cn } from "@/lib/utils"
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation'
+  import { Toaster, toast } from 'sonner';
 
 interface NavItem {
   title: string
@@ -93,6 +94,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Top navigation bar */}
+      <Toaster richColors position="top-center" />
       <header className="sticky top-0 z-30 flex h-16 items-center border-b border-border/40 bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:px-6">
         <Button
           variant="ghost"

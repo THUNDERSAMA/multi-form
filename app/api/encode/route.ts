@@ -31,13 +31,13 @@
 //     }
 //     return result;
 //   }
-import { NextRequest, NextResponse } from 'next/server';
-import { Redis } from '@upstash/redis';
+import { NextRequest, NextResponse } from "next/server";
+import { Redis } from "@upstash/redis";
 
 // Connect to Upstash
 const redis = new Redis({
-  url: 'https://fleet-tortoise-10685.upstash.io',
-  token: 'ASm9AAIjcDE3ZjEwNzZkMjIwNTg0NDU0YWZkM2VmNDZkNmQyZjlmY3AxMA',
+  url: "https://meet-hermit-35370.upstash.io",
+  token: "AYoqAAIncDEwYWVjMDFmNDIxMjM0N2Y4OTRkMzkwODBhNDdjNzRhYnAxMzUzNzA",
 });
 
 export async function POST(req: NextRequest) {
@@ -46,7 +46,10 @@ export async function POST(req: NextRequest) {
   const currentYear = new Date().getFullYear().toString();
   const yearIndex = input.indexOf(currentYear);
   if (yearIndex === -1) {
-    return NextResponse.json({ error: 'Invalid input format' }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid input format" },
+      { status: 400 }
+    );
   }
 
   const beforeYear = input.substring(0, yearIndex);
@@ -54,7 +57,7 @@ export async function POST(req: NextRequest) {
 
   let id: number | null = await redis.get(`part:${beforeYear}`);
   if (!id) {
-    const counter = await redis.incr('counter:parts');
+    const counter = await redis.incr("counter:parts");
     await redis.set(`part:${beforeYear}`, counter);
     await redis.set(`id:${counter}`, beforeYear);
     id = counter;
@@ -69,11 +72,12 @@ export async function POST(req: NextRequest) {
 }
 
 function toBase62(num: any) {
-  const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let result = '';
+  const chars =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let result = "";
   while (num > 0) {
     result = chars[num % 62] + result;
     num = Math.floor(num / 62);
   }
-  return result || '0';
+  return result || "0";
 }

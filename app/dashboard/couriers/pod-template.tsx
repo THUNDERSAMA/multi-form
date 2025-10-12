@@ -62,7 +62,9 @@ export function PODTemplate({ courier }: { courier: Courier }) {
           </div>
           <div className="w-1/3 p-2">
             <div className="text-xs text-blue-700 font-semibold mb-1">CONSIGNMENT NOTE NUMBER</div>
-            <div className="flex justify-center items-center h-12 font-bold text-gray-950  text-xs">{datas.trackingId}</div>
+            <div className="flex justify-center items-center h-12 font-bold text-gray-950  text-xs">{datas.shortTrackingId}</div>
+            <div className="flex justify-center items-center h-12 font-bold text-gray-500  text-xs">{datas.trackingId}</div>
+            
           </div>
         </div>
 

@@ -35,13 +35,13 @@
 //     }
 //     return result;
 //   }
-import { NextRequest, NextResponse } from 'next/server';
-import { Redis } from '@upstash/redis';
+import { NextRequest, NextResponse } from "next/server";
+import { Redis } from "@upstash/redis";
 
 // Connect to Upstash
 const redis = new Redis({
-  url: 'https://fleet-tortoise-10685.upstash.io',
-  token: 'ASm9AAIjcDE3ZjEwNzZkMjIwNTg0NDU0YWZkM2VmNDZkNmQyZjlmY3AxMA',
+  url: "https://meet-hermit-35370.upstash.io",
+  token: "AYoqAAIncDEwYWVjMDFmNDIxMjM0N2Y4OTRkMzkwODBhNDdjNzRhYnAxMzUzNzA",
 });
 
 export async function POST(req: NextRequest) {
@@ -50,7 +50,10 @@ export async function POST(req: NextRequest) {
   const yearShort = new Date().getFullYear().toString().substring(2);
   const yearIndex = input.indexOf(yearShort);
   if (yearIndex === -1) {
-    return NextResponse.json({ error: 'Invalid input format' }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid input format" },
+      { status: 400 }
+    );
   }
 
   const encodedId = input.substring(0, yearIndex);
@@ -59,20 +62,20 @@ export async function POST(req: NextRequest) {
   const id = fromBase62(encodedId);
   const beforeYear = await redis.get(`id:${id}`);
   if (!beforeYear) {
-    return NextResponse.json({ error: 'ID not found' }, { status: 404 });
+    return NextResponse.json({ error: "ID not found" }, { status: 404 });
   }
 
   let afterYear = fromBase62(encodedAfterYear).toString();
-  if(afterYear.length < 12) 
-    afterYear = "0" + afterYear;
-  let decodedString = beforeYear + '20' + yearShort + afterYear;
+  if (afterYear.length < 12) afterYear = "0" + afterYear;
+  let decodedString = beforeYear + "20" + yearShort + afterYear;
   if (decodedString.length < 12) decodedString = "0" + decodedString;
 
   return NextResponse.json({ decoded: decodedString });
 }
 
 function fromBase62(str: string) {
-  const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const chars =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let result = 0;
   for (let i = 0; i < str.length; i++) {
     result = result * 62 + chars.indexOf(str[i]);
