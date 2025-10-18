@@ -350,16 +350,16 @@ else
             Submit Order
           </button>
         </div>
-        <Invoice formData={formData} shortCode={shortId}/>
+        
         {submissionStatus?.success && (
           <div className="flex justify-between mt-6">
-            <button
+            {/* <button
               type="button"
               className="text-sm text-blue-700 underline hover:text-blue-900"
               onClick={() => document.getElementById("jsonToggle")?.classList.toggle("hidden")}
             >
               Toggle JSON View
-            </button>
+            </button> */}
             
             {/* <pre id="jsonToggle" className="mt-2 hidden bg-gray-100 p-4 rounded overflow-auto max-h-64 text-xs">
               {JSON.stringify(
@@ -372,6 +372,7 @@ else
 
         )}
       </form>
+      <Invoice formData={formData} shortCode={shortId}/>
     </div>
   )
 }

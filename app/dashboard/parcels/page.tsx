@@ -67,7 +67,7 @@ export default function ParcelsPage() {
       setTrackingId(searchInput)
 
       
-      if (searchInput.length > 14) {
+      if (searchInput.length > 12) {
         //fetch parcel details from api
         const response = await fetch("/api/getbyId", {
           method: "POST",
