@@ -6,6 +6,7 @@ import type { FormData } from "../multi-step-form"
 import Invoice from "../multiform_ui/invoice"
 import { encode } from "../encoder"
 import { Toaster, toast } from 'sonner';
+
 interface FinishStepProps {
   formData: FormData
   updateFormData: (data: Partial<FormData>) => void
@@ -32,6 +33,44 @@ export default function FinishStep({ formData, updateFormData, prevStep }: Finis
 
     if (formData.trackingId) getEncoded();
   }, [formData.trackingId]);
+
+ function compressBase64(
+  base64: string | ArrayBuffer | null,
+  quality: number = 0.6
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (!base64 || typeof base64 !== "string") {
+      reject(new Error("Invalid base64 input"));
+      return;
+    }
+
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // avoid CORS taint
+    img.src = base64;
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Failed to get 2D context"));
+        return;
+      }
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const compressed = canvas.toDataURL("image/jpeg", quality);
+      resolve(compressed);
+    };
+
+    img.onerror = (err) => {
+      reject(new Error("Image load error: " + err));
+    };
+  });
+}
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
@@ -110,8 +149,8 @@ else
       const reader = new FileReader()
       reader.onloadend = () => setImagePreview(reader.result as string)
       reader.readAsDataURL(file)
-      reader.onload = () => {
-        updateFormData({ courierImage: reader.result as string })
+      reader.onload = async () => {
+        updateFormData({ courierImage:  await compressBase64(reader.result, 0.6) as string })
         //console.log("Image preview:", reader.result)
       }
     }

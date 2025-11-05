@@ -60,7 +60,13 @@ try { const response = await fetch("/api/getData")
       
       const data = await response.json()
       console.log("Response:", data)
-      setCouriers(data.data)
+        if (Array.isArray(data.data)) {
+        setCouriers(data.data);
+      } else {
+        setCouriers([]); // empty array fallback
+      }
+      //setCouriers(data.data)
+      
       setIsLoading(false);
     }
     catch (error) {
@@ -226,9 +232,40 @@ try { const response = await fetch("/api/getData")
       </Dialog>
     )
   }
+  const renderCouriers = (filterStatus?: string) => {
+  const filtered = filterStatus
+    ? couriers.filter((c) => c.status.toString() === filterStatus)
+    : couriers;
+
+  if (filtered.length === 0)
+    return (
+      <p className="col-span-full text-center text-gray-400">No data found</p>
+    );
+
+  return filtered.map((courier) => (
+    <CourierCard
+      key={courier.id}
+      courier={courier}
+      onViewDetails={() => {
+        setSelectedCourier(courier);
+        setDetailsOpen(true);
+      }}
+      statusBadge={getStatusBadge(
+        courier.status == 0
+          ? "pending"
+          : courier.status == 1
+          ? "confirmed"
+          : "cancelled"
+      )}
+      onEdit={() => handleEditCourier(courier.id)}
+    />
+  ));
+};
+
   if(!couriers) {
     return <div className="text-center">Loading...</div>
   }
+  
   else
   {
   return (
@@ -253,71 +290,12 @@ try { const response = await fetch("/api/getData")
           ) : (
             
               <>
-        <TabsContent value="all" className=" grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
-          {couriers.map((courier) => (
-            <CourierCard
-              key={courier.id}
-              courier={courier}
-              onViewDetails={() => {
-                setSelectedCourier(courier)
-                setDetailsOpen(true)
-              }}
-              statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
-              onEdit={() => handleEditCourier(courier.id)}
-            />
-          ))}
-        </TabsContent>
+      <TabsContent value="all" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">{renderCouriers()}</TabsContent>
+<TabsContent value="pending" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">{renderCouriers("0")}</TabsContent>
+<TabsContent value="confirmed" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">{renderCouriers("1")}</TabsContent>
+<TabsContent value="cancelled" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">{renderCouriers("2")}</TabsContent>
 
-        <TabsContent value="pending" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
-          {couriers
-            .filter((c) => c.status.toString() === '0')
-            .map((courier) => (
-              <CourierCard
-                key={courier.id}
-                courier={courier}
-                onViewDetails={() => {
-                  setSelectedCourier(courier)
-                  setDetailsOpen(true)
-                }}
-                statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
-                onEdit={() => handleEditCourier(courier.id)}
-              />
-            ))}
-        </TabsContent>
-
-        <TabsContent value="confirmed" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
-          {couriers
-            .filter((c) => c.status.toString() === '1')
-            .map((courier) => (
-              <CourierCard
-                key={courier.id}
-                courier={courier}
-                onViewDetails={() => {
-                  setSelectedCourier(courier)
-                  setDetailsOpen(true)
-                }}
-                statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
-                onEdit={() => handleEditCourier(courier.id)}
-              />
-            ))}
-        </TabsContent>
-
-        <TabsContent value="cancelled" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
-          {couriers
-            .filter((c) => c.status.toString() === '2')
-            .map((courier) => (
-              <CourierCard
-                key={courier.id}
-                courier={courier}
-                onViewDetails={() => {
-                  setSelectedCourier(courier)
-                  setDetailsOpen(true)
-                }}
-                statusBadge={getStatusBadge(courier.status==0?"pending":courier.status==1?"confirmed":"cancelled")}
-                onEdit={() => handleEditCourier(courier.id)}
-              />
-            ))}
-        </TabsContent>
+      
         </>
           )}
       </Tabs>
