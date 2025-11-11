@@ -2,12 +2,16 @@ import { useState, useRef } from "react";
 import { Button } from "../ui/button";
 
 interface FormData {
+
   courierPartner: string;
   courierPrice: string;
   toAddress: {
     name?: string;
     address: string;
     phone: string;
+  };
+  fromAddress: {
+    name: string;
   };
   payementType: string;
   courierDetails: {
@@ -34,9 +38,12 @@ interface InvoiceProps {
 export default function Invoice({ formData, shortCode }: InvoiceProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const invoiceRef = useRef<HTMLDivElement>(null);
-
+  //date in dd-mm-yyyy format
+  const date = new Date();
+  const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
   const generateInvoiceHTML = () => {
     const courier = formData.multipleCouriers?.[0] || formData;
+    console.log(formData);
     
     return `
       <html>
@@ -66,8 +73,11 @@ export default function Invoice({ formData, shortCode }: InvoiceProps) {
             <p class="text-sm font-semibold">${shortCode}</p>
             <p class="text-sm font-semibold">₹${formData.courierPrice}</p>
           </div>
-          
+          <div class="mb-1 text-gray-700 font-semibold font-sans italic font-sm">
+           ${formattedDate}
+          </div>
           <div class="mt-3 border-t border-dashed border-blue-600 pt-2 text-left text-sm">
+          
             <div class="flex">
               <div class="ml-auto w-1/2">
                 <p class="text-sm text-gray-500 mb-1 font-semibold">Client</p>
@@ -77,8 +87,8 @@ export default function Invoice({ formData, shortCode }: InvoiceProps) {
                 </div>
               </div>
               <div class="ml-auto w-1/2">
-                <p class="text-sm text-gray-500 mb-1 font-semibold">Payment</p>
-                <span class="text-sm font-medium">${formData.payementType === "cod" ? (formData.courierPrice === "" ? "cod" : formData.courierPrice) : formData.payementType}</span>
+                <p class="text-sm text-gray-500 mb-1 font-semibold">Sender</p>
+                <span class="text-sm font-medium">${formData.fromAddress.name}</span>
               </div>
             </div>
           </div>
@@ -246,8 +256,11 @@ export default function Invoice({ formData, shortCode }: InvoiceProps) {
           <p className="text-sm font-semibold text-gray-950">{shortCode}</p>
           <p className="text-sm font-semibold text-gray-950">₹{formData.courierPrice}</p>
         </div>
-        
+         <div className="mb-1 text-gray-500 font-semibold font-sans italic font-sm">
+           {formattedDate}
+          </div>
         <div className="mt-3 border-t border-dashed border-blue-600 pt-2 text-left text-sm">
+         
           <div className="flex">
             <div className="ml-auto w-1/2">
               <p className="text-sm text-gray-500 mb-1 font-semibold">Client</p>
@@ -257,8 +270,8 @@ export default function Invoice({ formData, shortCode }: InvoiceProps) {
               </div>
             </div>
             <div className="ml-auto w-1/2">
-              <p className="text-sm text-gray-500 mb-1 font-semibold">Payment</p>
-              <span className="text-sm font-medium text-gray-950">{formData.payementType === "cod" ? (formData.courierPrice === "" ? "cod" : formData.courierPrice) : formData.payementType}</span>
+              <p className="text-sm text-gray-500 mb-1 font-semibold">Sender</p>
+              <span className="text-sm font-medium text-gray-950">${formData.fromAddress.name}</span>
             </div>
           </div>
         </div>
