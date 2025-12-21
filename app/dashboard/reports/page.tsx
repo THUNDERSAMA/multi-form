@@ -243,13 +243,16 @@ useEffect(() => {
                 <th scope="col" className="px-6 py-3">
                     CN-no
                 </th>
-                <th scope="col" className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                 <th scope="col" className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                    Client
+                </th>
+                <th scope="col" className="px-6 py-3 ">
                     Destination
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
                     Weight
                 </th>
-                <th scope="col" className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                <th scope="col" className="px-6 py-3 ">
                    Mode
                 </th>
             </tr>
@@ -279,13 +282,16 @@ useEffect(() => {
               <td className="px-6 py-4">
                 {item.cn || 'N/A'}
               </td>
-              <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
-                {item.destination || 'N/A'}
+               <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
+                {item.client || 'N/A'}
               </td>
               <td className="px-6 py-4">
-                {item.weight || 'N/A'}
+                {item.destination || 'N/A'}
               </td>
               <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
+                {item.weight || 'N/A'}
+              </td>
+              <td className="px-6 py-4 ">
                 {item.mode || 'N/A'}
               </td>
             </tr>
