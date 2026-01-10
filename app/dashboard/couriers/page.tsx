@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,14 +18,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Check, Clock, X, Download, FileText, Edit } from "lucide-react"
+import { Check, Clock, X, Download, FileText, Edit, Loader2 } from "lucide-react"
 import html2canvas from "html2canvas"
 import PODTemplate from "./pod-template"
 import type { Courier } from "@/lib/courierType"
 import { Console } from "console"
 import { EditParcelDialog } from "./EditParcelDialog"
-//import { Toaster } from "@/components/ui/toaster"
- import { Toaster, toast } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import DeliveryCardSkeleton from "@/components/loader/deliverySkeleton"
 import Invoice from "@/components/multiform_ui/invoice"
 
@@ -44,38 +43,80 @@ export default function CouriersPage() {
   const [courierToEdit, setCourierToEdit] = useState<(Courier[])[0] | null>(null)
   const [parcelIdToEdit, setParcelIdToEdit] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  
+  // Infinite scroll states
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [offset, setOffset] = useState(0)
+  const [totalCount, setTotalCount] = useState(0)
+  
   // Correct password for this demo
   const CORRECT_PASSWORD = "123"
+  const ITEMS_PER_PAGE = 6
 
   useEffect(() => {
     // Reset authentication state when component mounts
     setIsAuthenticated(false)
     setIsPasswordModalOpen(true)
   }, [])
+
+  // Initial data fetch
   useEffect(() => {
-    // get couriers from api
-    setIsLoading(true);
-    const fetchCouriers = async () => {
-try { const response = await fetch("/api/getData")
+    if (isAuthenticated) {
+      fetchCouriers(true)
+    }
+  }, [isAuthenticated])
+
+  // Fetch couriers function with pagination
+  const fetchCouriers = async (isInitial = false) => {
+    if (!isAuthenticated) return
+    
+    if (isInitial) {
+      setIsLoading(true)
+      setOffset(0)
+      setCouriers([])
+    } else {
+      setIsLoadingMore(true)
+    }
+
+    try {
+      const currentOffset = isInitial ? 0 : offset
+      const response = await fetch(`/api/getData?limit=${ITEMS_PER_PAGE}&offset=${currentOffset}`)
       
       const data = await response.json()
       console.log("Response:", data)
-        if (Array.isArray(data.data)) {
-        setCouriers(data.data);
-      } else {
-        setCouriers([]); // empty array fallback
-      }
-      //setCouriers(data.data)
       
-      setIsLoading(false);
-    }
-    catch (error) {
+      if (data.data && Array.isArray(data.data)) {
+        if (isInitial) {
+          setCouriers(data.data)
+        } else {
+          setCouriers(prev => [...prev, ...data.data])
+        }
+        
+        // Update pagination state
+        setHasMore(data.pagination?.hasMore || false)
+        setTotalCount(data.pagination?.total || 0)
+        setOffset(currentOffset + data.data.length)
+      } else {
+        setCouriers([])
+        setHasMore(false)
+      }
+    } catch (error) {
       console.error("Error fetching couriers:", error)
+      toast.error("Failed to load couriers")
+    } finally {
+      setIsLoading(false)
+      setIsLoadingMore(false)
     }
+  }
+
+  // Handle load more button click
+  const handleLoadMore = () => {
+    if (!isLoadingMore && hasMore) {
+      fetchCouriers(false)
     }
-    fetchCouriers();
-    
-  }, [])
+  }
+
   const handlePasswordSubmit = () => {
     if (password === CORRECT_PASSWORD) {
       setIsAuthenticated(true)
@@ -87,10 +128,8 @@ try { const response = await fetch("/api/getData")
   }
 
   const handleConfirmCourier = async (id: any) => {
-   // setCouriers(couriers.map((courier) => (courier.id === id ? { ...courier, status: 1 } : courier)))
+    console.log("Confirming courier with ID:", id)
     
-   console.log("Confirming courier with ID:", id)
-    // Call the API to confirm the courier
     const response = await fetch("/api/updateData", {
       method: "POST",
       body: JSON.stringify({ id, status: "confirm" }),
@@ -98,25 +137,31 @@ try { const response = await fetch("/api/getData")
         "Content-Type": "application/json",
       },
     })
+    
     if (!response.ok) {
       console.error("Error confirming courier:", response.statusText)
       return
     }
+    
     const data = await response.json()
     if (data.data.status === "success") {
       console.log("Courier confirmed successfully")
       toast.success("Courier confirmed successfully ✅")
-
-    setDetailsOpen(false) 
-    router.refresh();
+      
+      // Update local state instead of full refresh
+      setCouriers(prevCouriers => 
+        prevCouriers.map(courier => 
+          courier.id === id ? { ...courier, status: 1 } : courier
+        )
+      )
+      
+      setDetailsOpen(false)
     }
-   
   }
 
   const handleCancelCourier = async (id: any) => {
-   // setCouriers(couriers.map((courier) => (courier.id === id ? { ...courier, status: 2 } : courier)))
-   console.log("Confirming courier with ID:", id)
-   // Call the API to confirm the courier
+    console.log("Cancelling courier with ID:", id)
+    
     const response = await fetch("/api/updateData", {
       method: "POST",
       body: JSON.stringify({ id, status: "cancel" }),
@@ -124,28 +169,37 @@ try { const response = await fetch("/api/getData")
         "Content-Type": "application/json",
       },
     })
+    
     if (!response.ok) {
-      console.error("Error confirming courier:", response.statusText)
+      console.error("Error cancelling courier:", response.statusText)
       return
     }
+    
     const data = await response.json()
     if (data.data.status === "success") {
       console.log("Courier cancelled successfully")
+      toast.success("Courier cancelled ❌ successfully")
       
-      toast.success("Courier cancelled ❌ successfully ")
-    setDetailsOpen(false) 
-    router.refresh();
+      // Update local state instead of full refresh
+      setCouriers(prevCouriers => 
+        prevCouriers.map(courier => 
+          courier.id === id ? { ...courier, status: 2 } : courier
+        )
+      )
+      
+      setDetailsOpen(false)
     }
   }
+
   const handleEditCourier = (id: any) => {
     setParcelIdToEdit(id)
     setEditModalOpen(true)
   }
 
   const handleEditSuccess = () => {
-    // In a real app, we would refresh the courier data from the API
-    // For now, we'll just simulate a successful update
     console.log("Parcel updated successfully")
+    // Refresh data to show updates
+    fetchCouriers(true)
   }
 
   const generatePOD = () => {
@@ -156,7 +210,7 @@ try { const response = await fetch("/api/getData")
   const downloadPOD = async () => {
     if (podRef.current) {
       const canvas = await html2canvas(podRef.current, {
-        scale: 2, // Higher resolution
+        scale: 2,
         logging: false,
         useCORS: true,
         allowTaint: true,
@@ -170,7 +224,6 @@ try { const response = await fetch("/api/getData")
   }
 
   const getStatusBadge = (status: string) => {
-    console.log("Status:", status)
     switch (status) {
       case "pending":
         return (
@@ -232,45 +285,48 @@ try { const response = await fetch("/api/getData")
       </Dialog>
     )
   }
+
   const renderCouriers = (filterStatus?: string) => {
-  const filtered = filterStatus
-    ? couriers.filter((c) => c.status.toString() === filterStatus)
-    : couriers;
+    const filtered = filterStatus
+      ? couriers.filter((c) => c.status.toString() === filterStatus)
+      : couriers
 
-  if (filtered.length === 0)
-    return (
-      <p className="col-span-full text-center text-gray-400">No data found</p>
-    );
+    if (filtered.length === 0 && !isLoading) {
+      return (
+        <p className="col-span-full text-center text-gray-400">No data found</p>
+      )
+    }
 
-  return filtered.map((courier) => (
-    <CourierCard
-      key={courier.id}
-      courier={courier}
-      onViewDetails={() => {
-        setSelectedCourier(courier);
-        setDetailsOpen(true);
-      }}
-      statusBadge={getStatusBadge(
-        courier.status == 0
-          ? "pending"
-          : courier.status == 1
-          ? "confirmed"
-          : "cancelled"
-      )}
-      onEdit={() => handleEditCourier(courier.id)}
-    />
-  ));
-};
-
-  if(!couriers) {
-    return <div className="text-center">Loading...</div>
+    return filtered.map((courier) => (
+      <CourierCard
+        key={courier.id}
+        courier={courier}
+        onViewDetails={() => {
+          setSelectedCourier(courier)
+          setDetailsOpen(true)
+        }}
+        statusBadge={getStatusBadge(
+          courier.status == 0
+            ? "pending"
+            : courier.status == 1
+            ? "confirmed"
+            : "cancelled"
+        )}
+        onEdit={() => handleEditCourier(courier.id)}
+      />
+    ))
   }
-  
-  else
-  {
+
   return (
     <div className="container mx-auto py-6">
-      <h1 className="text-3xl font-bold mb-6">Courier Bookings</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Courier Bookings</h1>
+        {totalCount > 0 && (
+          <p className="text-sm text-gray-600">
+            Showing {couriers.length} of {totalCount} bookings
+          </p>
+        )}
+      </div>
 
       <Tabs defaultValue="pending" className="w-full">
         <TabsList className="mb-4">
@@ -279,25 +335,71 @@ try { const response = await fetch("/api/getData")
           <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
           <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
         </TabsList>
-         { (isLoading) ? (
         
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1"> 
-              {[...Array(8)].map((_, index) => (
-                <DeliveryCardSkeleton key={index}/>
-              ))}
-            </div>
-
-          ) : (
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
+            {[...Array(8)].map((_, index) => (
+              <DeliveryCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : (
+          <>
+            <TabsContent 
+              value="all" 
+              className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1"
+            >
+              {renderCouriers()}
+            </TabsContent>
             
-              <>
-      <TabsContent value="all" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">{renderCouriers()}</TabsContent>
-<TabsContent value="pending" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">{renderCouriers("0")}</TabsContent>
-<TabsContent value="confirmed" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">{renderCouriers("1")}</TabsContent>
-<TabsContent value="cancelled" className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">{renderCouriers("2")}</TabsContent>
+            <TabsContent 
+              value="pending" 
+              className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1"
+            >
+              {renderCouriers("0")}
+            </TabsContent>
+            
+            <TabsContent 
+              value="confirmed" 
+              className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1"
+            >
+              {renderCouriers("1")}
+            </TabsContent>
+            
+            <TabsContent 
+              value="cancelled" 
+              className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1"
+            >
+              {renderCouriers("2")}
+            </TabsContent>
 
-      
-        </>
-          )}
+            {/* Load More Button */}
+            {hasMore && !isLoading && (
+              <div className="col-span-full flex justify-center py-8">
+                <Button
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                  className="min-w-[200px]"
+                  size="lg"
+                >
+                  {isLoadingMore ? (
+                    <>
+                      <Loader2 className="mr-2 animate-spin" size={20} />
+                      Loading...
+                    </>
+                  ) : (
+                    <>Load More</>
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {!hasMore && couriers.length > 0 && (
+              <div className="col-span-full text-center py-8 text-gray-500">
+                <p>No more bookings to load</p>
+              </div>
+            )}
+          </>
+        )}
       </Tabs>
 
       {/* Courier Details Dialog */}
@@ -306,93 +408,90 @@ try { const response = await fetch("/api/getData")
           {selectedCourier && (
             <>
             {(() => {
-          const parsedData = typeof selectedCourier.data === "string"
-            ? JSON.parse(selectedCourier.data)
-            : selectedCourier.data;
-           console.log("Parsed Data:", selectedCourier.date_time)
-          return (
-            <>
-            <DialogHeader>
-              <DialogTitle>Courier Booking Details</DialogTitle>
-              <DialogDescription>Booking ID: {parsedData.trackingId}</DialogDescription>
-            </DialogHeader>
-          
-            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6 space-y-4 w-full">
-              <div className="grid grid-cols-3 items-start gap-4">
-                <Label className="text-right text-gray-600 font-medium">Customer</Label>
-                <div className="col-span-2 text-gray-800">{parsedData.fromAddress.name}</div>
-              </div>
-              <div className="grid grid-cols-3 items-start gap-4">
-                <Label className="text-right text-gray-600 font-medium">Pickup</Label>
-                <div className="col-span-2 text-gray-800">{parsedData.fromAddress.address}</div>
-              </div>
-              <div className="grid grid-cols-3 items-start gap-4">
-                <Label className="text-right text-gray-600 font-medium">Delivery</Label>
-                <div className="col-span-2 text-gray-800">{parsedData.toAddress.address}</div>
-              </div>
-              <div className="grid grid-cols-3 items-start gap-4">
-                <Label className="text-right text-gray-600 font-medium">Package</Label>
-                <div className="col-span-2 text-gray-800 capitalize">{parsedData.courierType}</div>
-              </div>
-              <div className="grid grid-cols-3 items-start gap-4">
-                <Label className="text-right text-gray-600 font-medium">Date & Time</Label>
-                <div className="col-span-2 text-gray-800">{selectedCourier.date_time}</div>
-              </div>
-              <div className="grid grid-cols-3 items-start gap-4">
-                <Label className="text-right text-gray-600 font-medium">Price</Label>
-                <div className="col-span-2 text-gray-800 font-semibold">₹{parsedData.courierPrice}</div>
-              </div>
-              <div className="grid grid-cols-3 items-start gap-4">
-                <Label className="text-right text-gray-600 font-medium">Status</Label>
-                <div className="col-span-2">
-                  {getStatusBadge(
-                    selectedCourier.status ==0
-                      ? "pending"
-                      : selectedCourier.status ==1
-                      ? "confirmed"
-                      : "cancelled"
-                  )}
-                </div>
-              </div>
-            </div>
-          
-            <DialogFooter className="flex justify-between flex-wrap gap-2 pt-4">
-              {selectedCourier.status == 0 && (
+              const parsedData = typeof selectedCourier.data === "string"
+                ? JSON.parse(selectedCourier.data)
+                : selectedCourier.data
+              console.log("Parsed Data:", selectedCourier.date_time)
+              return (
                 <>
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleCancelCourier(selectedCourier.id)}
-                    className="flex items-center gap-2"
-                  >
-                    <X size={16} /> Cancel Booking
-                  </Button>
-                  <Button
-                    onClick={() => handleConfirmCourier(selectedCourier.id)}
-                    className="flex items-center gap-2"
-                  >
-                    <Check size={16} /> Confirm Booking
-                  </Button>
+                  <DialogHeader>
+                    <DialogTitle>Courier Booking Details</DialogTitle>
+                    <DialogDescription>Booking ID: {parsedData.trackingId}</DialogDescription>
+                  </DialogHeader>
+                
+                  <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6 space-y-4 w-full">
+                    <div className="grid grid-cols-3 items-start gap-4">
+                      <Label className="text-right text-gray-600 font-medium">Customer</Label>
+                      <div className="col-span-2 text-gray-800">{parsedData.fromAddress.name}</div>
+                    </div>
+                    <div className="grid grid-cols-3 items-start gap-4">
+                      <Label className="text-right text-gray-600 font-medium">Pickup</Label>
+                      <div className="col-span-2 text-gray-800">{parsedData.fromAddress.address}</div>
+                    </div>
+                    <div className="grid grid-cols-3 items-start gap-4">
+                      <Label className="text-right text-gray-600 font-medium">Delivery</Label>
+                      <div className="col-span-2 text-gray-800">{parsedData.toAddress.address}</div>
+                    </div>
+                    <div className="grid grid-cols-3 items-start gap-4">
+                      <Label className="text-right text-gray-600 font-medium">Package</Label>
+                      <div className="col-span-2 text-gray-800 capitalize">{parsedData.courierType}</div>
+                    </div>
+                    <div className="grid grid-cols-3 items-start gap-4">
+                      <Label className="text-right text-gray-600 font-medium">Date & Time</Label>
+                      <div className="col-span-2 text-gray-800">{selectedCourier.date_time}</div>
+                    </div>
+                    <div className="grid grid-cols-3 items-start gap-4">
+                      <Label className="text-right text-gray-600 font-medium">Price</Label>
+                      <div className="col-span-2 text-gray-800 font-semibold">₹{parsedData.courierPrice}</div>
+                    </div>
+                    <div className="grid grid-cols-3 items-start gap-4">
+                      <Label className="text-right text-gray-600 font-medium">Status</Label>
+                      <div className="col-span-2">
+                        {getStatusBadge(
+                          selectedCourier.status == 0
+                            ? "pending"
+                            : selectedCourier.status == 1
+                            ? "confirmed"
+                            : "cancelled"
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                
+                  <DialogFooter className="flex justify-between flex-wrap gap-2 pt-4">
+                    {selectedCourier.status == 0 && (
+                      <>
+                        <Button
+                          variant="destructive"
+                          onClick={() => handleCancelCourier(selectedCourier.id)}
+                          className="flex items-center gap-2"
+                        >
+                          <X size={16} /> Cancel Booking
+                        </Button>
+                        <Button
+                          onClick={() => handleConfirmCourier(selectedCourier.id)}
+                          className="flex items-center gap-2"
+                        >
+                          <Check size={16} /> Confirm Booking
+                        </Button>
+                      </>
+                    )}
+                
+                    <div className="flex gap-2 ml-auto">
+                      <Button variant="outline" onClick={() => setDetailsOpen(false)}>
+                        Close
+                      </Button>
+                      <Button onClick={generatePOD} className="flex items-center gap-2">
+                        <FileText size={16} /> Generate POD
+                      </Button>
+                    </div>
+                    <div className="flex gap-2 ml-auto">
+                      <Invoice formData={parsedData} shortCode={parsedData.shortTrackingId}/>
+                    </div>
+                  </DialogFooter>
                 </>
-              )}
-          
-              <div className="flex gap-2 ml-auto">
-                <Button variant="outline" onClick={() => setDetailsOpen(false)}>
-                  Close
-                </Button>
-                <Button onClick={generatePOD} className="flex items-center gap-2">
-                  <FileText size={16} /> Generate POD
-                </Button>
-                 
-              </div>
-              <div className="flex gap-2 ml-auto">
-
-                <Invoice formData={parsedData} shortCode={parsedData.shortTrackingId}/>
-              </div>
-            </DialogFooter>
-          </>
-          
-          );
-        })()}
+              )
+            })()}
             </>
           )}
         </DialogContent>
@@ -420,6 +519,7 @@ try { const response = await fetch("/api/getData")
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
       {parcelIdToEdit && (
         <EditParcelDialog
           open={editModalOpen}
@@ -428,8 +528,6 @@ try { const response = await fetch("/api/getData")
           onSuccess={handleEditSuccess}
         />
       )}
-
-      {/* <Toaster /> */}
     </div>
   )
 }
@@ -445,7 +543,9 @@ function CourierCard({
   onViewDetails: () => void
   onEdit: () => void
   statusBadge: React.ReactNode
-}) { const parsedData = typeof courier.data === 'string' ? JSON.parse(courier.data) : courier.data;
+}) { 
+  const parsedData = typeof courier.data === 'string' ? JSON.parse(courier.data) : courier.data
+  
   return (
     <Card className="w-90 h-72 flex flex-col">
       <CardHeader className="pb-3">
@@ -495,5 +595,4 @@ function CourierCard({
       </CardFooter>
     </Card>
   )
-}
 }
