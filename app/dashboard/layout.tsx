@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
-import { FileText, Home, LogOut, Menu, Package, PackageSearch, Settings, Truck, User, X } from "lucide-react"
+import { FileText, Home, LogOut, Menu, Package, PackageSearch, Layers, PackageCheck, Settings, Truck, User, Blocks, X } from "lucide-react"
 import { Button } from "@/components/multiform_ui/button"
 import { cn } from "@/lib/utils"
 import Cookies from 'js-cookie'
@@ -43,12 +43,17 @@ const navItems: NavItem[] = [
   {
     title: "Confirm Parcel",
     href: "/dashboard/couriers",
-    icon: <PackageSearch className="h-5 w-5" />,
+    icon: <PackageCheck className="h-5 w-5" />,
   },
   {
     title: "Bulk pod",
     href: "/dashboard/bulk-pod",
-    icon: <PackageSearch className="h-5 w-5" />,
+    icon: <Blocks  className="h-5 w-5" />,
+  },
+   {
+    title: "Update",
+    href: "/dashboard/update",
+    icon: <Layers className="h-5 w-5" />,
   },
 ]
 

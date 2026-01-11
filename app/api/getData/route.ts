@@ -34,9 +34,12 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const limit = searchParams.get("limit") || "12";
     const offset = searchParams.get("offset") || "0";
+    const status = searchParams.get("status") || "";
 
     // Build the backend URL - adjust this to match your PHP backend URL
-    const url = `https://courierwallah.in/api/getData.php?limit=${limit}&offset=${offset}`;
+    const url = `https://courierwallah.in/api/getData.php?limit=${limit}&offset=${offset}${
+      status ? `&status=${status}` : ""
+    }`;
 
     console.log("Fetching from:", url);
 

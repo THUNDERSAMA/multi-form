@@ -10,14 +10,36 @@ import Link from 'next/link'
 const dailyDeliveries = [18, 25, 32, 28, 36, 30, 42]
 const weeklyDeliveries = [145, 132, 164, 187, 203, 178, 196]
 const monthlyDeliveries = [580, 620, 750, 690, 730, 810, 860]
-
+interface PodData {
+  available: number
+  lastUpdated: string
+  totalIssued: number
+  totalReturned: number
+}
 export default function DashboardPage() {
   const [mounted, setMounted] = useState(false)
-  
+  const [podData, setPodData] = useState<PodData | null>(null)
 
   useEffect(() => {
     setMounted(true)
+      // Fetch POD data from API
+      async function fetchPodData() {
+     try {
+      const response = await fetch("/api/pod", {
+        method: "GET",
+      })
 
+      if (!response.ok) {
+        throw new Error("Failed to fetch POD data")
+      }
+
+
+      const data = await response.json()
+      setPodData(data.data)
+    } catch (error) {
+      console.error("Error fetching POD data:", error)
+    }
+  }
     // Set up canvas for chart
     const setupChart = () => {
       const canvas = document.getElementById("deliveries-chart") as HTMLCanvasElement
@@ -92,9 +114,9 @@ export default function DashboardPage() {
         ctx.fillText(labels[index], x, canvas.height - padding + 20)
       })
     }
-
+     
     setupChart()
-
+    fetchPodData()
     // Add event listener for tab changes
     const tabsList = document.querySelector('[role="tabslist"]')
     if (tabsList) {
@@ -170,14 +192,13 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Active Customers</CardTitle>
+            <CardTitle className="text-sm font-medium">Available POD</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,249</div>
+            <div className="text-2xl font-bold">{podData?.available || 0}</div>
             <div className="flex items-center gap-1 text-xs text-green-500">
-              <ArrowUp className="h-3 w-3" />
-              <span>15% increase</span>
+            
             </div>
             <div className="mt-4 h-1 w-full rounded-full bg-muted">
               <div className="h-1 w-[85%] rounded-full bg-primary"></div>

@@ -34,7 +34,6 @@ export default function CouriersPage() {
   const [password, setPassword] = useState("")
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [passwordError, setPasswordError] = useState(false)
-  const [couriers, setCouriers] = useState<Courier[]>([])
   const [selectedCourier, setSelectedCourier] = useState<(Courier[])[0] | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [podModalOpen, setPodModalOpen] = useState(false)
@@ -42,13 +41,20 @@ export default function CouriersPage() {
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [courierToEdit, setCourierToEdit] = useState<(Courier[])[0] | null>(null)
   const [parcelIdToEdit, setParcelIdToEdit] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
   
-  // Infinite scroll states
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
-  const [offset, setOffset] = useState(0)
-  const [totalCount, setTotalCount] = useState(0)
+  // Separate state for each tab
+  const [allCouriers, setAllCouriers] = useState<Courier[]>([])
+  const [pendingCouriers, setPendingCouriers] = useState<Courier[]>([])
+  const [confirmedCouriers, setConfirmedCouriers] = useState<Courier[]>([])
+  const [cancelledCouriers, setCancelledCouriers] = useState<Courier[]>([])
+  
+  // Separate loading and pagination states for each tab
+  const [allState, setAllState] = useState({ isLoading: false, isLoadingMore: false, hasMore: true, offset: 0, total: 0 })
+  const [pendingState, setPendingState] = useState({ isLoading: false, isLoadingMore: false, hasMore: true, offset: 0, total: 0 })
+  const [confirmedState, setConfirmedState] = useState({ isLoading: false, isLoadingMore: false, hasMore: true, offset: 0, total: 0 })
+  const [cancelledState, setCancelledState] = useState({ isLoading: false, isLoadingMore: false, hasMore: true, offset: 0, total: 0 })
+  
+  const [activeTab, setActiveTab] = useState("pending")
   
   // Correct password for this demo
   const CORRECT_PASSWORD = "123"
@@ -60,31 +66,67 @@ export default function CouriersPage() {
     setIsPasswordModalOpen(true)
   }, [])
 
-  // Initial data fetch
+  // Initial data fetch for active tab
   useEffect(() => {
     if (isAuthenticated) {
-      fetchCouriers(true)
+      fetchCouriersForTab(activeTab, true)
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, activeTab])
 
-  // Fetch couriers function with pagination
-  const fetchCouriers = async (isInitial = false) => {
+  // Fetch couriers for specific tab
+  const fetchCouriersForTab = async (tab: string, isInitial = false) => {
     if (!isAuthenticated) return
     
+    // Determine which state and setter to use
+    let state, setState, setCouriers
+    let statusFilter = ""
+    
+    switch (tab) {
+      case "all":
+        state = allState
+        setState = setAllState
+        setCouriers = setAllCouriers
+        statusFilter = ""
+        break
+      case "pending":
+        state = pendingState
+        setState = setPendingState
+        setCouriers = setPendingCouriers
+        statusFilter = "0"
+        break
+      case "confirmed":
+        state = confirmedState
+        setState = setConfirmedState
+        setCouriers = setConfirmedCouriers
+        statusFilter = "1"
+        break
+      case "cancelled":
+        state = cancelledState
+        setState = setCancelledState
+        setCouriers = setCancelledCouriers
+        statusFilter = "2"
+        break
+      default:
+        return
+    }
+    
     if (isInitial) {
-      setIsLoading(true)
-      setOffset(0)
+      setState({ ...state, isLoading: true, offset: 0 })
       setCouriers([])
     } else {
-      setIsLoadingMore(true)
+      setState({ ...state, isLoadingMore: true })
     }
 
     try {
-      const currentOffset = isInitial ? 0 : offset
-      const response = await fetch(`/api/getData?limit=${ITEMS_PER_PAGE}&offset=${currentOffset}`)
+      const currentOffset = isInitial ? 0 : state.offset
+      const url = statusFilter 
+        ? `/api/getData?limit=${ITEMS_PER_PAGE}&offset=${currentOffset}&status=${statusFilter}`
+        : `/api/getData?limit=${ITEMS_PER_PAGE}&offset=${currentOffset}`
       
+      const response = await fetch(url)
       const data = await response.json()
-      console.log("Response:", data)
+      console.log("Fetch URL:", url);
+      console.log(`Response for ${tab}:`, data)
       
       if (data.data && Array.isArray(data.data)) {
         if (isInitial) {
@@ -93,27 +135,47 @@ export default function CouriersPage() {
           setCouriers(prev => [...prev, ...data.data])
         }
         
-        // Update pagination state
-        setHasMore(data.pagination?.hasMore || false)
-        setTotalCount(data.pagination?.total || 0)
-        setOffset(currentOffset + data.data.length)
+        // Update state
+        setState({
+          isLoading: false,
+          isLoadingMore: false,
+          hasMore: data.pagination?.hasMore || false,
+          offset: currentOffset + data.data.length,
+          total: data.pagination?.total || 0
+        })
       } else {
         setCouriers([])
-        setHasMore(false)
+        setState({
+          isLoading: false,
+          isLoadingMore: false,
+          hasMore: false,
+          offset: 0,
+          total: 0
+        })
       }
     } catch (error) {
-      console.error("Error fetching couriers:", error)
+      console.error(`Error fetching ${tab} couriers:`, error)
       toast.error("Failed to load couriers")
-    } finally {
-      setIsLoading(false)
-      setIsLoadingMore(false)
+      setState({
+        ...state,
+        isLoading: false,
+        isLoadingMore: false
+      })
     }
   }
 
-  // Handle load more button click
+  // Handle load more for current tab
   const handleLoadMore = () => {
-    if (!isLoadingMore && hasMore) {
-      fetchCouriers(false)
+    const stateMap: any = {
+      all: allState,
+      pending: pendingState,
+      confirmed: confirmedState,
+      cancelled: cancelledState
+    }
+    
+    const state = stateMap[activeTab]
+    if (!state.isLoadingMore && state.hasMore) {
+      fetchCouriersForTab(activeTab, false)
     }
   }
 
@@ -148,12 +210,10 @@ export default function CouriersPage() {
       console.log("Courier confirmed successfully")
       toast.success("Courier confirmed successfully ✅")
       
-      // Update local state instead of full refresh
-      setCouriers(prevCouriers => 
-        prevCouriers.map(courier => 
-          courier.id === id ? { ...courier, status: 1 } : courier
-        )
-      )
+      // Refresh data for all tabs to sync with database
+      fetchCouriersForTab("all", true)
+      fetchCouriersForTab("pending", true)
+      fetchCouriersForTab("confirmed", true)
       
       setDetailsOpen(false)
     }
@@ -180,12 +240,10 @@ export default function CouriersPage() {
       console.log("Courier cancelled successfully")
       toast.success("Courier cancelled ❌ successfully")
       
-      // Update local state instead of full refresh
-      setCouriers(prevCouriers => 
-        prevCouriers.map(courier => 
-          courier.id === id ? { ...courier, status: 2 } : courier
-        )
-      )
+      // Refresh data for all tabs to sync with database
+      fetchCouriersForTab("all", true)
+      fetchCouriersForTab("pending", true)
+      fetchCouriersForTab("cancelled", true)
       
       setDetailsOpen(false)
     }
@@ -198,8 +256,8 @@ export default function CouriersPage() {
 
   const handleEditSuccess = () => {
     console.log("Parcel updated successfully")
-    // Refresh data to show updates
-    fetchCouriers(true)
+    // Refresh data for current tab
+    fetchCouriersForTab(activeTab, true)
   }
 
   const generatePOD = () => {
@@ -286,18 +344,15 @@ export default function CouriersPage() {
     )
   }
 
-  const renderCouriers = (filterStatus?: string) => {
-    const filtered = filterStatus
-      ? couriers.filter((c) => c.status.toString() === filterStatus)
-      : couriers
-
-    if (filtered.length === 0 && !isLoading) {
+  // Render function for grid cards (all, pending, cancelled)
+  const renderGridCouriers = (couriers: Courier[], state: any) => {
+    if (couriers.length === 0 && !state.isLoading) {
       return (
         <p className="col-span-full text-center text-gray-400">No data found</p>
       )
     }
 
-    return filtered.map((courier) => (
+    return couriers.map((courier) => (
       <CourierCard
         key={courier.id}
         courier={courier}
@@ -317,18 +372,55 @@ export default function CouriersPage() {
     ))
   }
 
+  // Render function for horizontal cards (confirmed)
+  const renderHorizontalCouriers = (couriers: Courier[], state: any) => {
+    if (couriers.length === 0 && !state.isLoading) {
+      return (
+        <p className="col-span-full text-center text-gray-400">No data found</p>
+      )
+    }
+
+    return couriers.map((courier) => (
+      <CourierCardHorizontal
+        key={courier.id}
+        courier={courier}
+        onViewDetails={() => {
+          setSelectedCourier(courier)
+          setDetailsOpen(true)
+        }}
+        statusBadge={getStatusBadge("confirmed")}
+        onEdit={() => handleEditCourier(courier.id)}
+      />
+    ))
+  }
+
   return (
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Courier Bookings</h1>
-        {totalCount > 0 && (
+        {activeTab === "all" && allState.total > 0 && (
           <p className="text-sm text-gray-600">
-            Showing {couriers.length} of {totalCount} bookings
+            Showing {allCouriers.length} of {allState.total} bookings
+          </p>
+        )}
+        {activeTab === "pending" && pendingState.total > 0 && (
+          <p className="text-sm text-gray-600">
+            Showing {pendingCouriers.length} of {pendingState.total} bookings
+          </p>
+        )}
+        {activeTab === "confirmed" && confirmedState.total > 0 && (
+          <p className="text-sm text-gray-600">
+            Showing {confirmedCouriers.length} of {confirmedState.total} bookings
+          </p>
+        )}
+        {activeTab === "cancelled" && cancelledState.total > 0 && (
+          <p className="text-sm text-gray-600">
+            Showing {cancelledCouriers.length} of {cancelledState.total} bookings
           </p>
         )}
       </div>
 
-      <Tabs defaultValue="pending" className="w-full">
+      <Tabs defaultValue="pending" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
@@ -336,70 +428,177 @@ export default function CouriersPage() {
           <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
         </TabsList>
         
-        {isLoading ? (
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
-            {[...Array(8)].map((_, index) => (
-              <DeliveryCardSkeleton key={index} />
-            ))}
-          </div>
-        ) : (
-          <>
-            <TabsContent 
-              value="all" 
-              className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1"
-            >
-              {renderCouriers()}
-            </TabsContent>
-            
-            <TabsContent 
-              value="pending" 
-              className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1"
-            >
-              {renderCouriers("0")}
-            </TabsContent>
-            
-            <TabsContent 
-              value="confirmed" 
-              className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1"
-            >
-              {renderCouriers("1")}
-            </TabsContent>
-            
-            <TabsContent 
-              value="cancelled" 
-              className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1"
-            >
-              {renderCouriers("2")}
-            </TabsContent>
-
-            {/* Load More Button */}
-            {hasMore && !isLoading && (
-              <div className="col-span-full flex justify-center py-8">
-                <Button
-                  onClick={handleLoadMore}
-                  disabled={isLoadingMore}
-                  className="min-w-[200px]"
-                  size="lg"
-                >
-                  {isLoadingMore ? (
-                    <>
-                      <Loader2 className="mr-2 animate-spin" size={20} />
-                      Loading...
-                    </>
-                  ) : (
-                    <>Load More</>
-                  )}
-                </Button>
+        {/* ALL TAB */}
+        <TabsContent value="all">
+          {allState.isLoading ? (
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
+              {[...Array(8)].map((_, index) => (
+                <DeliveryCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
+                {renderGridCouriers(allCouriers, allState)}
               </div>
-            )}
 
-            {!hasMore && couriers.length > 0 && (
-              <div className="col-span-full text-center py-8 text-gray-500">
-                <p>No more bookings to load</p>
+              {allState.hasMore && (
+                <div className="flex justify-center py-8">
+                  <Button
+                    onClick={handleLoadMore}
+                    disabled={allState.isLoadingMore}
+                    className="min-w-[200px]"
+                    size="lg"
+                  >
+                    {allState.isLoadingMore ? (
+                      <>
+                        <Loader2 className="mr-2 animate-spin" size={20} />
+                        Loading...
+                      </>
+                    ) : (
+                      <>Load More</>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {!allState.hasMore && allCouriers.length > 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No more bookings to load</p>
+                </div>
+              )}
+            </>
+          )}
+        </TabsContent>
+
+        {/* PENDING TAB */}
+        <TabsContent value="pending">
+          {pendingState.isLoading ? (
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
+              {[...Array(8)].map((_, index) => (
+                <DeliveryCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
+                {renderGridCouriers(pendingCouriers, pendingState)}
               </div>
-            )}
-          </>
-        )}
+
+              {pendingState.hasMore && (
+                <div className="flex justify-center py-8">
+                  <Button
+                    onClick={handleLoadMore}
+                    disabled={pendingState.isLoadingMore}
+                    className="min-w-[200px]"
+                    size="lg"
+                  >
+                    {pendingState.isLoadingMore ? (
+                      <>
+                        <Loader2 className="mr-2 animate-spin" size={20} />
+                        Loading...
+                      </>
+                    ) : (
+                      <>Load More</>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {!pendingState.hasMore && pendingCouriers.length > 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No more bookings to load</p>
+                </div>
+              )}
+            </>
+          )}
+        </TabsContent>
+
+        {/* CONFIRMED TAB - Horizontal Layout */}
+        <TabsContent value="confirmed">
+          {confirmedState.isLoading ? (
+            <div className="space-y-4">
+              {[...Array(6)].map((_, index) => (
+                <div key={index} className="h-24 bg-gray-100 animate-pulse rounded-lg" />
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="space-y-4">
+                {renderHorizontalCouriers(confirmedCouriers, confirmedState)}
+              </div>
+
+              {confirmedState.hasMore && (
+                <div className="flex justify-center py-8">
+                  <Button
+                    onClick={handleLoadMore}
+                    disabled={confirmedState.isLoadingMore}
+                    className="min-w-[200px]"
+                    size="lg"
+                  >
+                    {confirmedState.isLoadingMore ? (
+                      <>
+                        <Loader2 className="mr-2 animate-spin" size={20} />
+                        Loading...
+                      </>
+                    ) : (
+                      <>Load More</>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {!confirmedState.hasMore && confirmedCouriers.length > 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No more bookings to load</p>
+                </div>
+              )}
+            </>
+          )}
+        </TabsContent>
+
+        {/* CANCELLED TAB */}
+        <TabsContent value="cancelled">
+          {cancelledState.isLoading ? (
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
+              {[...Array(8)].map((_, index) => (
+                <DeliveryCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1">
+                {renderGridCouriers(cancelledCouriers, cancelledState)}
+              </div>
+
+              {cancelledState.hasMore && (
+                <div className="flex justify-center py-8">
+                  <Button
+                    onClick={handleLoadMore}
+                    disabled={cancelledState.isLoadingMore}
+                    className="min-w-[200px]"
+                    size="lg"
+                  >
+                    {cancelledState.isLoadingMore ? (
+                      <>
+                        <Loader2 className="mr-2 animate-spin" size={20} />
+                        Loading...
+                      </>
+                    ) : (
+                      <>Load More</>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {!cancelledState.hasMore && cancelledCouriers.length > 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No more bookings to load</p>
+                </div>
+              )}
+            </>
+          )}
+        </TabsContent>
       </Tabs>
 
       {/* Courier Details Dialog */}
@@ -532,7 +731,7 @@ export default function CouriersPage() {
   )
 }
 
-// Courier Card Component
+// Regular Courier Card Component (for grid layout)
 function CourierCard({
   courier,
   onViewDetails,
@@ -593,6 +792,81 @@ function CourierCard({
           </Button>
         </div>
       </CardFooter>
+    </Card>
+  )
+}
+
+// Horizontal Courier Card Component (for confirmed tab)
+function CourierCardHorizontal({
+  courier,
+  onViewDetails,
+  statusBadge,
+  onEdit
+}: {
+  courier: Courier
+  onViewDetails: () => void
+  onEdit: () => void
+  statusBadge: React.ReactNode
+}) { 
+  const parsedData = typeof courier.data === 'string' ? JSON.parse(courier.data) : courier.data
+  
+  return (
+    <Card className="w-full hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between gap-4">
+          {/* Left section - Main info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start gap-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-sm truncate">
+                    {parsedData.toAddress.address}
+                  </h3>
+                  {statusBadge}
+                </div>
+                <p className="text-xs text-muted-foreground truncate">
+                  From: {parsedData.fromAddress.address}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Middle section - Details */}
+          <div className="hidden sm:flex items-center gap-6">
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground">Package</p>
+              <p className="text-sm font-medium capitalize">{parsedData.courierType}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground">Partner</p>
+              <p className="text-sm font-medium">{parsedData.courierPartner}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground">Date</p>
+              <p className="text-sm font-medium flex items-center gap-1">
+                <Clock size={12} />
+                {courier.date_time.split(' ')[0]}
+              </p>
+            </div>
+          </div>
+
+          {/* Right section - Price and actions */}
+          <div className="flex items-center gap-3">
+            <span className="bg-green-100 text-green-800 text-sm font-semibold px-3 py-1.5 rounded">
+              ₹{parsedData.courierPrice}
+            </span>
+            
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" onClick={onEdit} className="h-9 w-9 p-0">
+                <Edit size={16} />
+              </Button>
+              <Button variant="outline" size="sm" onClick={onViewDetails} className="h-9">
+                Details
+              </Button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
     </Card>
   )
 }

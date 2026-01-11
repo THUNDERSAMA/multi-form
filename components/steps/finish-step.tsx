@@ -103,7 +103,23 @@ toast.promise(responsePromise, {
   success: 'Order submitted successfully! 👌',
   error: 'Error',
 });
-
+const podResponse =  fetch("/api/pod", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          "action": "decrement",
+          "quantity": 1,
+          "updatedBy": "courier - booking",
+          "comments":  null,
+        }),
+      });
+      toast.promise(podResponse, {
+  loading: 'Submitting your order...',
+  success: 'Order submitted successfully! 👌',
+  error: 'Error',
+});
 const response = await responsePromise;
 if (response.status === 300) {
   setSubmissionStatus({

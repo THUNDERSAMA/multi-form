@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { Button } from "../ui/button";
 
 interface FormData {
-
   courierPartner: string;
   courierPrice: string;
   toAddress: {
@@ -38,133 +37,343 @@ interface InvoiceProps {
 export default function Invoice({ formData, shortCode }: InvoiceProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const invoiceRef = useRef<HTMLDivElement>(null);
-  //date in dd-mm-yyyy format
+  
+  // Date in dd-mm-yyyy format
   const date = new Date();
   const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+  
   const generateInvoiceHTML = () => {
     const courier = formData.multipleCouriers?.[0] || formData;
-    console.log(formData);
     
     return `
+      <!DOCTYPE html>
       <html>
         <head>
-          <title>Invoice</title>
+          <title>Invoice - ${shortCode}</title>
           <meta charset="UTF-8">
-          <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            
             @media print {
               @page {
-                size: 90mm 182mm;
-                margin: 0;
+                size: A6;
+                margin: 5mm;
               }
               html, body {
                 margin: 0 !important;
-                overflow: hidden;
-                height: 100%;
+                padding: 0 !important;
+                overflow: visible;
+                height: auto;
                 width: 100%;
               }
+              .invoice-container {
+                page-break-inside: avoid;
+              }
+            }
+            
+            body {
+              font-family: Arial, sans-serif;
+              background: white;
+              padding: 10px;
+              font-size: 9px;
+            }
+            
+            .invoice-container {
+              max-width: 105mm;
+              margin: 0 auto;
+              border: 2px solid #000;
+              padding: 10px;
+              background: white;
+            }
+            
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              margin-bottom: 8px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid #000;
+            }
+            
+            .recipient-info {
+              flex: 1;
+            }
+            
+            .recipient-info h3 {
+              font-size: 9px;
+              margin-bottom: 3px;
+              font-weight: bold;
+            }
+            
+            .recipient-info p {
+              font-size: 8px;
+              line-height: 1.3;
+              margin: 1px 0;
+            }
+            
+            .logo-section {
+              text-align: right;
+              flex-shrink: 0;
+              margin-left: 10px;
+            }
+            
+            .logo-text {
+              font-size: 14px;
+              font-weight: bold;
+              color: #2563eb;
+              margin-bottom: 2px;
+            }
+            
+            .logo-section .tagline {
+              font-size: 7px;
+              font-style: italic;
+              color: #666;
+            }
+            
+            .order-section {
+              display: flex;
+              justify-content: space-between;
+              margin: 8px 0;
+              padding: 6px 0;
+              border-bottom: 1px solid #000;
+            }
+            
+            .order-left, .order-right {
+              flex: 1;
+            }
+            
+            .order-right {
+              text-align: right;
+            }
+            
+            .order-label {
+              font-size: 8px;
+              font-weight: bold;
+              margin-bottom: 2px;
+            }
+            
+            .order-value {
+              font-size: 8px;
+            }
+            
+            .barcode-section {
+              text-align: right;
+              margin: 5px 0;
+            }
+            
+            .barcode-section img {
+              max-width: 120px;
+              height: 35px;
+              display: block;
+              margin-left: auto;
+            }
+            
+            .courier-section {
+              margin: 8px 0;
+              padding: 6px 0;
+              border-bottom: 1px solid #000;
+            }
+            
+            .courier-label {
+              font-size: 8px;
+              font-weight: bold;
+              margin-bottom: 3px;
+            }
+            
+            .courier-barcode {
+              text-align: center;
+              margin: 5px 0;
+            }
+            
+            .courier-barcode img {
+              max-width: 150px;
+              height: 45px;
+              display: block;
+              margin: 0 auto;
+            }
+            
+            .courier-id {
+              text-align: center;
+              font-size: 8px;
+              margin-top: 3px;
+            }
+            
+            .product-section {
+              margin: 8px 0;
+            }
+            
+            .product-section h3 {
+              font-size: 9px;
+              font-weight: bold;
+              margin-bottom: 5px;
+            }
+            
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 8px;
+            }
+            
+            table th {
+              background: #f0f0f0;
+              border: 1px solid #000;
+              padding: 4px;
+              text-align: left;
+              font-weight: bold;
+            }
+            
+            table td {
+              border: 1px solid #000;
+              padding: 4px;
+              vertical-align: top;
+            }
+            
+            .info-section {
+              margin: 10px 0;
+            }
+            
+            .info-section h3 {
+              font-size: 9px;
+              font-weight: bold;
+              margin-bottom: 3px;
+            }
+            
+            .info-section p {
+              font-size: 8px;
+              line-height: 1.3;
+              margin: 1px 0;
+            }
+            
+            .info-grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 10px;
+              margin-top: 8px;
+            }
+            
+            .text-strong {
+              font-weight: bold;
             }
           </style>
         </head>
-        <body class="rounded-xl bg-white shadow-md border border-gray-200 px-3 py-4" style="margin:0;">
-          <div class="text-center mb-2">
-            <h1 class="text-blue-600 text-xl font-bold">courierWallah</h1>
-            <h2 class="text-sm font-semibold uppercase">${formData.courierPartner}</h2>
-            <p class="text-sm font-semibold">${shortCode}</p>
-            <p class="text-sm font-semibold">₹${formData.courierPrice}</p>
-          </div>
-          <div class="mb-1 text-gray-700 font-semibold font-sans italic font-sm">
-           ${formattedDate}
-          </div>
-          <div class="mt-3 border-t border-dashed border-blue-600 pt-2 text-left text-sm">
-          
-            <div class="flex">
-              <div class="ml-auto w-1/2">
-                <p class="text-sm text-gray-500 mb-1 font-semibold">Client</p>
-                <div class="flex items-center gap-2">
-                  <img src="https://api.dicebear.com/9.x/thumbs/svg?seed=Aneka" alt="Avatar" class="rounded-full w-6 h-6"/>
-                  <span class="text-sm font-medium">${courier.toAddress?.name || "Client Name"}</span>
-                </div>
+        <body>
+          <div class="invoice-container">
+            <!-- Header Section -->
+            <div class="header">
+              <div class="recipient-info">
+                <h3>To:</h3>
+                <p class="text-strong">${courier.toAddress?.name || "Client Name"}</p>
+                <p>${formData.toAddress.address}</p>
+                <p>Phone: ${formData.toAddress.phone}</p>
               </div>
-              <div class="ml-auto w-1/2">
-                <p class="text-sm text-gray-500 mb-1 font-semibold">Sender</p>
-                <span class="text-sm font-medium">${formData.fromAddress.name}</span>
+              <div class="logo-section">
+                <img src="/logo-black.png" alt="courierWallah Logo" className="h-8 mx-auto mb-0.5" />
+                
               </div>
             </div>
-          </div>
-          
-          <hr class="border-t border-dashed my-2 border-blue-600" />
-          
-          <div class="mt-2 pt-2 pl-2 pr-2 text-left text-sm bg-gray-100 border-t rounded-lg">
-            <p class="text-sm text-gray-500 mb-1 font-semibold">Recipient Destination</p>
-            <div class="flex items-start gap-2">
-              <div class="text-xs leading-tight">
-                <div class="text-sm font-medium">${formData.toAddress.address.split(' ').reduce((acc, word, i) => i === 0 ? `<strong>${word}</strong>` : `${acc} ${word}`, '')}</div>
-                <div class="mt-1">
-                  <p class="text-sm text-gray-500 mb-1 font-semibold">Phone:</p>
-                  <span class="text-sm font-medium">${formData.toAddress.phone}</span>
+            
+            <!-- Order Section -->
+            <div class="order-section">
+              <div class="order-left">
+                <div style="margin-bottom: 5px;">
+                  <div class="order-label">Order No:</div>
+                  <div class="order-value">${formData.clientInvoice}</div>
+                </div>
+                <div>
+                  <div class="order-label">Order Date:</div>
+                  <div class="order-value">${formattedDate}</div>
+                </div>
+              </div>
+              <div class="order-right">
+                <div style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">${shortCode}</div>
+                <div class="barcode-section">
                 </div>
               </div>
             </div>
-          </div>
-          
-          <div class="mb-2 bg-gray-100 pl-2 pr-2 flex">
-            <div class="ml-auto w-1/2">
-              <p class="text-sm text-gray-500 mb-1 font-semibold">Weight:</p>
-              <span class="text-sm font-medium">${formData.courierDetails.weight} kg</span>
-              <p class="text-sm text-gray-500 mb-1 font-semibold">Dimensions:</p>
-              <span class="text-sm font-medium">${formData.courierDetails.length} × ${formData.courierDetails.width} × ${formData.courierDetails.height} cm</span>
+            
+            <!-- Courier Section -->
+            <div class="courier-section">
+              <div class="courier-label">Courier Name: ${formData.courierPartner}</div>
+              <div class="courier-barcode">
+                <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(formData.trackingId)}&scale=2&includetext" alt="Tracking Barcode" onerror="this.style.display='none'" />
+                <div class="courier-id">${formData.trackingId}</div>
+              </div>
             </div>
-            <div class="ml-auto w-1/2">
-              <p class="text-sm text-gray-500 mb-1 font-semibold">Method:</p>
-              <span class="text-sm font-medium">${formData.shippingMethod}</span>
-              <p class="text-sm text-gray-500 mb-1 font-semibold">Quantity:</p>
-              <span class="text-sm font-medium">${formData.quantity}</span>
+            
+            <!-- Product Details Section -->
+            <div class="product-section">
+              <h3>Product Details:</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 15%;">SKU</th>
+                    <th style="width: 70%;">Item Name</th>
+                    <th style="width: 15%;">Qty.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>N/A</td>
+                    <td>Package - ${formData.courierDetails.weight}kg (${formData.courierDetails.length}×${formData.courierDetails.width}×${formData.courierDetails.height}cm)</td>
+                    <td>${formData.quantity}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Information Sections -->
+            <div class="info-grid">
+              <div class="info-section">
+                <h3>Consignor Information:</h3>
+                <p class="text-strong">${formData.courierPartner}</p>
+                <p>${formData.fromAddress.name}</p>
+                <p>Shipping: ${formData.shippingMethod}</p>
+                <p>Payment: ${formData.payementType}</p>
+              </div>
+              
+              <div class="info-section">
+                <h3>Pickup and Return Address:</h3>
+                <p class="text-strong">${formData.courierPartner}</p>
+                <p>${formData.fromAddress.name}</p>
+              </div>
+            </div>
+            
+            <!-- Financial Details -->
+            <div class="info-section" style="margin-top: 10px;">
+              <table>
+                <tbody>
+                  <tr>
+                    <td class="text-strong">Invoice Amount:</td>
+                    <td>₹${courier.totalAmount || formData.totalAmount}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-strong">Courier Price:</td>
+                    <td>${formData.payementType=="Billed"?"Billed":formData.courierPrice}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-strong">Risk Surcharge:</td>
+                    <td>${formData.riskSurcharge}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-strong">Risk Factor:</td>
+                    <td>${formData.riskfactor}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          
-          <hr class="border-t border-dashed my-2 border-blue-600" />
-          
-          <div class="mb-2 flex bg-gray-100 pl-2 pr-2">
-            <div class="ml-auto w-1/2">
-              <p class="text-sm text-gray-500 mb-1 font-semibold">Invoice no:</p>
-              <span class="text-sm font-medium">${formData.clientInvoice}</span>
-              <p class="text-sm text-gray-500 mb-1 font-semibold">Invoice amount:</p>
-              <span class="text-sm font-medium">₹${courier.totalAmount || formData.totalAmount}</span>
-            </div>
-            <div class="ml-auto w-1/2">
-              <p class="text-sm text-gray-500 mb-1 font-semibold">Risk surcharge:</p>
-              <span class="text-sm font-medium">${formData.riskSurcharge}</span>
-              <p class="text-sm text-gray-500 mb-1 font-semibold">Risk factor:</p>
-              <span class="text-sm font-medium">${formData.riskfactor}</span>
-            </div>
-          </div>
-          
-          <div class="my-3 text-center">
-            <img src="https://barcode.tec-it.com/barcode.ashx?data=${formData.trackingId}&code=Code128&translate-esc=true" class="h-10 mx-auto" />
-          </div>
-          
-          <div class="h-5 border-b border-dashed border-blue-600"></div>
-          
-          <p style="margin:0;padding:0;" class="text-center text-[10px] text-gray-950 font-bold leading-none">WITHOUT INSURANCE NO RISK</p>
-          <p style="margin:0; padding:0;" class="font-mono font-medium text-xs">
-            Important: No insurance = Consignor Risk. Max claim ₹100. Consignor declares shipment legal & accepts terms.
-          </p>
-          <p class="font-mono text-xs text-gray-500">
-            (1) Elegant Courier not liable for delays beyond control.<br>
-            (2) Claims within 15 days.<br>
-            (3) Kolkata Jurisdiction. Records kept 30 days.<br>
-            (4) Consignor responsible for false declarations.<br>
-          </p>
-          
-          <p style="margin:2;padding:0;" class="text-center text-[10px] text-sky-600 leading-none">Thank you for choosing Elegant Courier</p>
         </body>
       </html>
     `;
   };
 
   const handlePrint = () => {
-    const invoiceWindow = window.open("", "_blank", "width=600,height=800");
+    const invoiceWindow = window.open("", "_blank", "width=450,height=650");
     if (invoiceWindow) {
       const invoiceHTML = generateInvoiceHTML();
       invoiceWindow.document.write(invoiceHTML);
@@ -172,7 +381,7 @@ export default function Invoice({ formData, shortCode }: InvoiceProps) {
       
       setTimeout(() => {
         invoiceWindow.print();
-      }, 300);
+      }, 500);
     }
   };
 
@@ -200,12 +409,30 @@ export default function Invoice({ formData, shortCode }: InvoiceProps) {
       // Load html2canvas library
       const html2canvas = await loadHtml2Canvas();
       
+      // Temporarily make the element visible for capture
+      const element = invoiceRef.current;
+      const originalTop = element.style.top;
+      const originalVisibility = element.style.visibility;
+      
+      element.style.top = '0';
+      element.style.visibility = 'visible';
+      
+      // Wait a bit to ensure all images (barcodes) are loaded
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       // Generate canvas from the invoice
-      const canvas = await html2canvas(invoiceRef.current, {
-        scale: 2,
+      const canvas = await html2canvas(element, {
+        scale: 3,
         useCORS: true,
-        backgroundColor: '#ffffff'
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        imageTimeout: 15000
       });
+      
+      // Restore original position
+      element.style.top = originalTop;
+      element.style.visibility = originalVisibility;
 
       // Convert canvas to blob
       canvas.toBlob(async (blob: Blob | null) => {
@@ -246,108 +473,147 @@ export default function Invoice({ formData, shortCode }: InvoiceProps) {
     link.click();
   };
 
+  const courier = formData.multipleCouriers?.[0] || formData;
+
   return (
-    <div>
+    <div className="w-full">
       {/* Hidden Invoice for Screenshot */}
-      <div ref={invoiceRef} className="rounded-xl bg-white shadow-md border border-gray-200 px-3 py-4" style={{ width: '340px', position: 'absolute', left: '-9999px' }}>
-        <div className="text-center mb-2">
-          <h1 className="text-blue-600 text-xl font-bold">courierWallah</h1>
-          <h2 className="text-sm font-semibold uppercase text-gray-950">{formData.courierPartner}</h2>
-          <p className="text-sm font-semibold text-gray-950">{shortCode}</p>
-          <p className="text-sm font-semibold text-gray-950">₹{formData.courierPrice}</p>
-        </div>
-         <div className="mb-1 text-gray-500 font-semibold font-sans italic font-sm">
-           {formattedDate}
+      <div 
+        ref={invoiceRef} 
+        className="bg-white border-2 border-black"
+        style={{ 
+          width: '396px', 
+          position: 'fixed',
+          top: '-9999px',
+          left: '0',
+          padding: '12px',
+          fontSize: '10px',
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          color: 'black'
+        }}
+      >
+        {/* Header Section */}
+        <div className="flex justify-between items-start mb-2 pb-2 border-b-2 border-black">
+          <div className="flex-1">
+            <h3 className="text-[9px] font-bold mb-1">To:</h3>
+            <p className="text-[8px] mb-0.5 leading-tight"><strong>{courier.toAddress?.name || "Client Name"}</strong></p>
+            <p className="text-[8px] leading-tight mb-0.5">{formData.toAddress.address}</p>
+            <p className="text-[8px]">Phone: {formData.toAddress.phone}</p>
           </div>
-        <div className="mt-3 border-t border-dashed border-blue-600 pt-2 text-left text-sm">
-         
-          <div className="flex">
-            <div className="ml-auto w-1/2">
-              <p className="text-sm text-gray-500 mb-1 font-semibold">Client</p>
-              <div className="flex items-center gap-2">
-                <img src="https://api.dicebear.com/9.x/thumbs/svg?seed=Aneka" alt="Avatar" className="rounded-full w-6 h-6"/>
-                <span className="text-sm font-medium text-gray-950">{(formData.multipleCouriers?.[0] || formData).toAddress?.name || "Client Name"}</span>
-              </div>
+          <div className="text-right flex-shrink-0">
+            <img 
+              src="/logo-black.png" 
+              alt="courierWallah Logo" 
+              className="h-8 mx-auto mb-0.5" 
+            />
+            
+          </div>
+        </div>
+        
+        {/* Order Section */}
+        <div className="flex justify-between mb-2 pb-2 border-b border-black">
+          <div>
+            <div className="mb-1">
+              <div className="text-[8px] font-bold">Order No:</div>
+              <div className="text-[8px]">{formData.clientInvoice}</div>
             </div>
-            <div className="ml-auto w-1/2">
-              <p className="text-sm text-gray-500 mb-1 font-semibold">Sender</p>
-              <span className="text-sm font-medium text-gray-950">${formData.fromAddress.name}</span>
+            <div>
+              <div className="text-[8px] font-bold">Order Date:</div>
+              <div className="text-[8px]">{formattedDate}</div>
             </div>
           </div>
-        </div>
-        
-        <hr className="border-t border-dashed my-2 border-blue-600" />
-        
-        <div className="mt-2 pt-2 pl-2 pr-2 text-left text-sm bg-gray-100 border-t rounded-lg">
-          <p className="text-sm text-gray-500 mb-1 font-semibold">Recipient Destination</p>
-          <div className="flex items-start gap-2">
-            <div className="text-xs leading-tight">
-              <div className="text-sm font-medium text-gray-950" dangerouslySetInnerHTML={{ __html: formData.toAddress.address.split(' ').reduce((acc, word, i) => i === 0 ? `<strong>${word}</strong>` : `${acc} ${word}`, '') }} />
-              <div className="mt-1">
-                <p className="text-sm text-gray-500 mb-1 font-semibold">Phone:</p>
-                <span className="text-sm font-medium text-gray-950">{formData.toAddress.phone}</span>
-              </div>
-            </div>
+          <div className="text-right">
+            <div className="text-sm font-bold mb-1">{shortCode}</div>
+            
+            <div className="text-[7px] mt-0.5">{formData.clientInvoice}</div>
           </div>
         </div>
         
-        <div className="mb-2 bg-gray-100 pl-2 pr-2 flex">
-          <div className="ml-auto w-1/2">
-            <p className="text-sm text-gray-500 mb-1 font-semibold">Weight:</p>
-            <span className="text-sm font-medium text-gray-950">{formData.courierDetails.weight} kg</span>
-            <p className="text-sm text-gray-500 mb-1 font-semibold">Dimensions:</p>
-            <span className="text-sm font-medium text-gray-950">{formData.courierDetails.length} × {formData.courierDetails.width} × {formData.courierDetails.height} cm</span>
-          </div>
-          <div className="ml-auto w-1/2">
-            <p className="text-sm text-gray-500 mb-1 font-semibold">Method:</p>
-            <span className="text-sm font-medium text-gray-950">{formData.shippingMethod}</span>
-            <p className="text-sm text-gray-500 mb-1 font-semibold">Quantity:</p>
-            <span className="text-sm font-medium text-gray-950">{formData.quantity}</span>
-          </div>
-        </div>
-        
-        <hr className="border-t border-dashed my-2 border-blue-600" />
-        
-        <div className="mb-2 flex bg-gray-100 pl-2 pr-2">
-          <div className="ml-auto w-1/2">
-            <p className="text-sm text-gray-500 mb-1 font-semibold">Invoice no:</p>
-            <span className="text-sm font-medium text-gray-950">{formData.clientInvoice}</span>
-            <p className="text-sm text-gray-500 mb-1 font-semibold">Invoice amount:</p>
-            <span className="text-sm font-medium text-gray-950" >₹{(formData.multipleCouriers?.[0] || formData).totalAmount || formData.totalAmount}</span>
-          </div>
-          <div className="ml-auto w-1/2">
-            <p className="text-sm text-gray-500 mb-1 font-semibold">Risk surcharge:</p>
-            <span className="text-sm font-medium text-gray-950">{formData.riskSurcharge}</span>
-            <p className="text-sm text-gray-500 mb-1 font-semibold">Risk factor:</p>
-            <span className="text-sm font-medium text-gray-950">{formData.riskfactor}</span>
+        {/* Courier Section */}
+        <div className="mb-2 pb-2 border-b border-black">
+          <div className="text-[8px] font-bold mb-1">Courier Name: {formData.courierPartner}</div>
+          <div className="text-center">
+            <img 
+              src={`https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(formData.trackingId)}&scale=2&includetext`}
+              alt="Tracking Barcode"
+              className="h-11 mx-auto"
+              crossOrigin="anonymous"
+            />
+            <div className="text-[8px] mt-0.5">{formData.trackingId}</div>
           </div>
         </div>
         
-        <div className="my-3 text-center">
-          <img src={`https://barcode.tec-it.com/barcode.ashx?data=${formData.trackingId}&code=Code128&translate-esc=true`} className="h-10 mx-auto" alt="Barcode" crossOrigin="anonymous" />
+        {/* Product Details */}
+        <div className="mb-2">
+          <h3 className="text-[9px] font-bold mb-1">Product Details:</h3>
+          <table className="w-full text-[8px] border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-black p-1 text-left">SKU</th>
+                <th className="border border-black p-1 text-left">Item Name</th>
+                <th className="border border-black p-1 text-left">Qty.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-black p-1">N/A</td>
+                <td className="border border-black p-1">
+                  Package - {formData.courierDetails.weight}kg 
+                  ({formData.courierDetails.length}×{formData.courierDetails.width}×{formData.courierDetails.height}cm)
+                </td>
+                <td className="border border-black p-1">{formData.quantity}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         
-        <div className="h-5 border-b border-dashed border-blue-600"></div>
+        {/* Information Grid */}
+        <div className="grid grid-cols-2 gap-2 mb-2">
+          <div>
+            <h3 className="text-[9px] font-bold mb-0.5">Consignor Information:</h3>
+            <p className="text-[8px] leading-tight"><strong>{formData.courierPartner}</strong></p>
+            <p className="text-[8px] leading-tight">{formData.fromAddress.name}</p>
+            <p className="text-[8px] leading-tight">Shipping: {formData.shippingMethod}</p>
+            <p className="text-[8px] leading-tight">Payment: {formData.payementType}</p>
+          </div>
+          
+          <div>
+            <h3 className="text-[9px] font-bold mb-0.5">Pickup and Return Address:</h3>
+            <p className="text-[8px] leading-tight"><strong>{formData.courierPartner}</strong></p>
+            <p className="text-[8px] leading-tight">{formData.fromAddress.name}</p>
+          </div>
+        </div>
         
-        <p style={{ margin: 0, padding: 0 }} className="text-center text-[10px] text-gray-950 font-bold leading-none">WITHOUT INSURANCE NO RISK</p>
-        <p style={{ margin: 0, padding: 0 }} className="font-mono font-medium text-xs text-gray-950">
-          Important: No insurance = Consignor Risk. Max claim ₹100. Consignor declares shipment legal & accepts terms.
-        </p>
-        <p className="font-mono text-xs text-gray-500">
-          (1) Elegant Courier not liable for delays beyond control.<br />
-          (2) Claims within 15 days.<br />
-          (3) Kolkata Jurisdiction. Records kept 30 days.<br />
-          (4) Consignor responsible for false declarations.<br />
-        </p>
-        
-        <p style={{ margin: 2, padding: 0 }} className="text-center text-[10px] text-sky-600 leading-none">Thank you for choosing Elegant Courier</p>
+        {/* Financial Details */}
+        <div>
+          <table className="w-full text-[8px]">
+            <tbody>
+              <tr className="border border-black">
+                <td className="border border-black p-1"><strong>Invoice Amount:</strong></td>
+                <td className="border border-black p-1">₹{courier.totalAmount || formData.totalAmount}</td>
+              </tr>
+              <tr className="border border-black">
+                <td className="border border-black p-1"><strong>Courier Price:</strong></td>
+                <td className="border border-black p-1">{formData.payementType=="Billed"?"Billed":formData.courierPrice}</td>
+              </tr>
+              <tr className="border border-black">
+                <td className="border border-black p-1"><strong>Risk Surcharge:</strong></td>
+                <td className="border border-black p-1">{formData.riskSurcharge}</td>
+              </tr>
+              <tr className="border border-black">
+                <td className="border border-black p-1"><strong>Risk Factor:</strong></td>
+                <td className="border border-black p-1">{formData.riskfactor}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex gap-3 mt-4">
         <Button
-       
-        className="flex items-center gap-2"
+          className="flex items-center gap-2"
           onClick={handlePrint}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -357,8 +623,8 @@ export default function Invoice({ formData, shortCode }: InvoiceProps) {
         </Button>
 
         <Button
-        variant={"secondary"}
-        className="flex items-center gap-2"
+          variant="secondary"
+          className="flex items-center gap-2"
           onClick={handleShare}
           disabled={isGenerating}
         >
@@ -383,4 +649,3 @@ export default function Invoice({ formData, shortCode }: InvoiceProps) {
     </div>
   );
 }
-
