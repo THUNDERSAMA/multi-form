@@ -116,7 +116,7 @@ export default function DashboardPage() {
     }
      
     setupChart()
-    fetchPodData()
+   // fetchPodData()
     // Add event listener for tab changes
     const tabsList = document.querySelector('[role="tabslist"]')
     if (tabsList) {
@@ -190,21 +190,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Available POD</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{podData?.available || 0}</div>
-            <div className="flex items-center gap-1 text-xs text-green-500">
-            
-            </div>
-            <div className="mt-4 h-1 w-full rounded-full bg-muted">
-              <div className="h-1 w-[85%] rounded-full bg-primary"></div>
-            </div>
-          </CardContent>
-        </Card>
+       
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">

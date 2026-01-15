@@ -763,7 +763,7 @@ function CourierCard({
       <CardContent className="pb-3 space-y-2 flex-1 overflow-hidden">
         <div className="text-sm">
           <span className="text-muted-foreground text-xs">From:</span>
-          <p className="font-medium line-clamp-1">{parsedData.fromAddress.address}</p>
+          <p className="font-medium line-clamp-1">{parsedData.fromAddress.name}</p>
         </div>
         
         <div className="flex gap-4 text-xs">
