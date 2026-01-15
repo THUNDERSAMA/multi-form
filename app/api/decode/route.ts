@@ -1,51 +1,3 @@
-// import { NextRequest, NextResponse } from "next/server";
-// import { Redis } from "@upstash/redis";
-
-// // Connect to Upstash
-// const redis = new Redis({
-//   url: "https://meet-hermit-35370.upstash.io",
-//   token: "AYoqAAIncDEwYWVjMDFmNDIxMjM0N2Y4OTRkMzkwODBhNDdjNzRhYnAxMzUzNzA",
-// });
-
-// export async function POST(req: NextRequest) {
-//   const { input } = await req.json();
-
-//   const yearShort = new Date().getFullYear().toString().substring(2);
-//   const yearIndex = input.indexOf(yearShort);
-//   if (yearIndex === -1) {
-//     return NextResponse.json(
-//       { error: "Invalid input format" },
-//       { status: 400 }
-//     );
-//   }
-
-//   const encodedId = input.substring(0, yearIndex);
-//   const encodedAfterYear = input.substring(yearIndex + yearShort.length);
-
-//   const id = fromBase62(encodedId);
-//   const beforeYear = await redis.get(`id:${id}`);
-//   if (!beforeYear) {
-//     return NextResponse.json({ error: "ID not found" }, { status: 404 });
-//   }
-
-//   let afterYear = fromBase62(encodedAfterYear).toString();
-//   if (afterYear.length < 12) afterYear = "0" + afterYear;
-//   let decodedString = beforeYear + "20" + yearShort + afterYear;
-//   if (decodedString.length < 12) decodedString = "0" + decodedString;
-
-//   return NextResponse.json({ decoded: decodedString });
-// }
-
-// function fromBase62(str: string) {
-//   const chars =
-//     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-//   let result = 0;
-//   for (let i = 0; i < str.length; i++) {
-//     result = result * 62 + chars.indexOf(str[i]);
-//   }
-//   return result;
-// }
-
 import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 
@@ -56,31 +8,105 @@ const redis = new Redis({
 });
 
 export async function POST(req: NextRequest) {
-  const { input } = await req.json(); // e.g. "A0000000001"
+  try {
+    const { input } = await req.json();
 
-  if (!input || input.length !== 11) {
+    // Validate input exists
+    if (!input || typeof input !== "string") {
+      return NextResponse.json(
+        { error: "Invalid request: input is required" },
+        { status: 400 }
+      );
+    }
+
+    const shortCode = input.trim().toUpperCase();
+
+    // Validate format
+    if (!isValidShortCode(shortCode)) {
+      return NextResponse.json(
+        {
+          error: "Invalid tracking number format",
+          expected: "Format: 1 letter (A-Z) + 10 digits (e.g., A0000000001)",
+          received: shortCode,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Direct lookup from Redis
+    const original = await redis.get<string>(`decode:${shortCode}`);
+
+    if (!original) {
+      return NextResponse.json(
+        {
+          error: "Tracking number not found",
+          shortCode: shortCode,
+          message:
+            "This short code has not been generated yet or does not exist",
+        },
+        { status: 404 }
+      );
+    }
+
+    // Verify reverse mapping exists (data integrity check)
+    const reverseCheck = await redis.get<string>(`track:${original}`);
+    if (reverseCheck !== shortCode) {
+      console.error(
+        `DATA INTEGRITY ERROR: decode:${shortCode} → ${original}, but track:${original} → ${reverseCheck}`
+      );
+
+      return NextResponse.json(
+        {
+          error: "Data integrity issue detected",
+          shortCode: shortCode,
+          decoded: original,
+          warning: "Please contact support with this tracking number",
+        },
+        { status: 500 }
+      );
+    }
+
+    const decoded = {
+      trackingNo: shortCode,
+      original: original,
+      prefix: shortCode.charAt(0),
+      number: shortCode.substring(1),
+      cycle: Math.floor(
+        (parseInt(shortCode.substring(1)) + 1) / 10_000_000_000
+      ),
+    };
+
+    return NextResponse.json({
+      success: true,
+      decoded: original,
+      details: decoded,
+    });
+  } catch (error: any) {
+    console.error("Decode error:", error);
+
     return NextResponse.json(
-      { error: "Invalid tracking number format" },
-      { status: 400 }
+      {
+        error: "Internal server error",
+        message: error.message || "Failed to decode tracking number",
+      },
+      { status: 500 }
     );
   }
+}
+/**
+ * Validate short tracking code format
+ */
+function isValidShortCode(code: string): boolean {
+  // Must be exactly 11 characters
+  if (code.length !== 11) return false;
 
-  // Direct lookup — instant O(1)
-  const original = await redis.get<string>(`decode:${input}`);
+  // First character must be A-Z
+  const firstChar = code.charCodeAt(0);
+  if (firstChar < 65 || firstChar > 90) return false;
 
-  if (!original) {
-    return NextResponse.json(
-      { error: "Tracking number not found" },
-      { status: 404 }
-    );
-  }
+  // Remaining 10 characters must be digits
+  const numericPart = code.substring(1);
+  if (!/^\d{10}$/.test(numericPart)) return false;
 
-  const decoded = {
-    trackingNo: input,
-    original,
-    prefix: input.charAt(0),
-    number: input.substring(1),
-  };
-
-  return NextResponse.json({ decoded: original });
+  return true;
 }

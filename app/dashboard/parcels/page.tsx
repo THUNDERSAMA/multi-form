@@ -13,7 +13,7 @@ import { Label } from "@/components/multiform_ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/multiform_ui/select"
 import { Separator } from "@/components/multiform_ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/multiform_ui/tabs"
-
+import { toast } from "sonner"
 interface ParcelDetails {
   id: string
   trackingId: string
@@ -242,8 +242,10 @@ export default function ParcelsPage() {
     }
     const data = await response.json()
     if (data.data.status === "success") {
+            toast.success("Courier set to transit 🚚")
+
       console.log("Courier set to transit")
-      alert("Courier set to transit")
+      
      
     }
     }
@@ -260,9 +262,11 @@ export default function ParcelsPage() {
       return
     }
     const data = await response.json()
+    
     if (data.data.status === "success") {
       console.log("Courier set to delivered")
-      alert("Courier set to delivered")
+      toast.success("Courier set to delivered 📦✅")
+      //alert("Courier set to delivered")
      
     }
       console.log("Parcel is delivered");
