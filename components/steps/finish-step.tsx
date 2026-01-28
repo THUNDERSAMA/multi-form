@@ -103,23 +103,8 @@ toast.promise(responsePromise, {
   success: 'Order submitted successfully! 👌',
   error: 'Error',
 });
-const podResponse =  fetch("/api/pod", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          "action": "decrement",
-          "quantity": 1,
-          "updatedBy": "courier - booking",
-          "comments":  null,
-        }),
-      });
-      toast.promise(podResponse, {
-  loading: 'Submitting your order...',
-  success: 'Order submitted successfully! 👌',
-  error: 'Error',
-});
+
+
 const response = await responsePromise;
 if (response.status === 300) {
   setSubmissionStatus({
@@ -188,22 +173,49 @@ else
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block font-medium  text-gray-700  mb-2">Upload Courier Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            required
-            onChange={handleImageChange}
-            className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-          />
-          {imagePreview && (
-            <div className="mt-4 text-center">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="mx-auto rounded shadow-md max-h-48 object-contain"
-              />
+          <label className="block font-medium  text-gray-700  mb-2">
+            {formData.courierImage ? "Courier Image (from AI Scan)" : "Upload Courier Image"}
+          </label>
+          
+          {formData.courierImage ? (
+            <div className="space-y-3">
+              <div className="mt-4 text-center">
+                <img
+                  src={formData.courierImage}
+                  alt="Scanned Courier"
+                  className="mx-auto rounded shadow-md max-h-48 object-contain"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  updateFormData({ courierImage: "" })
+                  setImagePreview(null)
+                }}
+                className="text-sm text-blue-600 hover:text-blue-800 underline"
+              >
+                Remove and upload a different image
+              </button>
             </div>
+          ) : (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                required
+                onChange={handleImageChange}
+                className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {imagePreview && (
+                <div className="mt-4 text-center">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="mx-auto rounded shadow-md max-h-48 object-contain"
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
         {/* check courier type for summary */}
@@ -431,4 +443,3 @@ else
     </div>
   )
 }
-
