@@ -658,35 +658,44 @@ export default function CouriersPage() {
                   </div>
                 
                   <DialogFooter className="flex justify-between flex-wrap gap-2 pt-4">
-                    {selectedCourier.status == 0 && (
+                    {selectedCourier.status == 0 ? (
                       <>
-                        <Button
-                          variant="destructive"
-                          onClick={() => handleCancelCourier(selectedCourier.id)}
-                          className="flex items-center gap-2"
-                        >
-                          <X size={16} /> Cancel Booking
-                        </Button>
-                        <Button
-                          onClick={() => handleConfirmCourier(selectedCourier.id)}
-                          className="flex items-center gap-2"
-                        >
-                          <Check size={16} /> Confirm Booking
-                        </Button>
+                        <div className="flex gap-2 flex-wrap">
+                          <Button
+                            variant="destructive"
+                            onClick={() => handleCancelCourier(selectedCourier.id)}
+                            className="flex items-center gap-2"
+                          >
+                            <X size={16} /> Cancel Booking
+                          </Button>
+                          <Button
+                            onClick={() => handleConfirmCourier(selectedCourier.id)}
+                            className="flex items-center gap-2"
+                          >
+                            <Check size={16} /> Confirm Booking
+                          </Button>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="outline" onClick={() => setDetailsOpen(false)}>
+                            Close
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex gap-2 flex-wrap">
+                          <Button variant="outline" onClick={() => setDetailsOpen(false)}>
+                            Close
+                          </Button>
+                          <Button onClick={generatePOD} className="flex items-center gap-2">
+                            <FileText size={16} /> Generate POD
+                          </Button>
+                        </div>
+                        <div className="flex gap-2">
+                          <Invoice formData={parsedData} shortCode={parsedData.shortTrackingId}/>
+                        </div>
                       </>
                     )}
-                
-                    <div className="flex gap-2 ml-auto">
-                      <Button variant="outline" onClick={() => setDetailsOpen(false)}>
-                        Close
-                      </Button>
-                      <Button onClick={generatePOD} className="flex items-center gap-2">
-                        <FileText size={16} /> Generate POD
-                      </Button>
-                    </div>
-                    <div className="flex gap-2 ml-auto">
-                      <Invoice formData={parsedData} shortCode={parsedData.shortTrackingId}/>
-                    </div>
                   </DialogFooter>
                 </>
               )
