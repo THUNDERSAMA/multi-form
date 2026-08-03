@@ -1,45 +1,32 @@
-// import { NextResponse, NextRequest } from "next/server";
-
-// export async function GET(req: NextRequest) {
-//   const searchParams = req.nextUrl.searchParams;
-
-//   const limit = searchParams.get("limit") || "12";
-//   const offset = searchParams.get("offset") || "0";
-//   //console.log("FORM DATA JSON:", formDataJson);
-//   const resp = await fetch(
-//     `https://courierwallah.in/api/getData.php?limit=${limit}&offset=${offset}`,
-//     {
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     }
-//   );
-
-//   console.log(
-//     "STATUS:",
-//     resp.status,
-//     "\nCONTENT TYPE:",
-//     resp.headers.get("content-type")
-//   );
-//   const rawText = await resp.text();
-//   // console.log("raw response:",rawText);
-//   const data = JSON.parse(rawText);
-//   return NextResponse.json({ data });
-// }
-// app/api/getData/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const limit = searchParams.get("limit") || "12";
+    let limit = searchParams.get("limit") || "12";
     const offset = searchParams.get("offset") || "0";
     const status = searchParams.get("status") || "";
+    const searchtype = searchParams.get("searchtype") || "";
+    const name = searchParams.get("name") || "";
+    const fromdate = searchParams.get("fromdate") || "";
+    const todate = searchParams.get("todate") || "";
 
+    if (searchtype != "") {
+      limit = "10000"; // Set limit to 1000 if searchtype is empty
+    }
     // Build the backend URL - adjust this to match your PHP backend URL
-    const url = `https://courierwallah.in/api/getData.php?limit=${limit}&offset=${offset}${
-      status ? `&status=${status}` : ""
-    }`;
+    const backendParams = new URLSearchParams({
+      limit,
+      offset,
+    });
+
+    if (status) backendParams.set("status", status);
+    if (searchtype) backendParams.set("searchtype", searchtype);
+    if (name) backendParams.set("name", name);
+    if (fromdate) backendParams.set("fromdate", fromdate);
+    if (todate) backendParams.set("todate", todate);
+
+    const url = `https://courierwallah.in/api/getData.php?${backendParams.toString()}`;
 
     console.log("Fetching from:", url);
 
@@ -62,7 +49,7 @@ export async function GET(request: NextRequest) {
     ) {
       console.error(
         "Received HTML instead of JSON:",
-        rawText.substring(0, 500)
+        rawText.substring(0, 500),
       );
       return NextResponse.json(
         {
@@ -76,7 +63,7 @@ export async function GET(request: NextRequest) {
             currentCount: 0,
           },
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -99,7 +86,7 @@ export async function GET(request: NextRequest) {
             currentCount: 0,
           },
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -122,7 +109,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(data);
     } else {
       // Unknown format
-      // console.error("Unknown data format:", data);
       return NextResponse.json(
         {
           error: "Unknown data format from backend",
@@ -135,7 +121,7 @@ export async function GET(request: NextRequest) {
             currentCount: 0,
           },
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   } catch (error) {
@@ -152,7 +138,7 @@ export async function GET(request: NextRequest) {
           currentCount: 0,
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

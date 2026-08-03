@@ -835,7 +835,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
-import PODTemplate from "../couriers/pod-template"
+import InvoiceTemplate from "@/components/multiform_ui/invoice-template"
 import html2canvas from "html2canvas"
 import JSZip from "jszip"
 // Fix the import for file-saver
@@ -850,7 +850,8 @@ export default function BulkPODPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
-  const [date, setDate] = useState<Date | undefined>(undefined)
+  const [fromDate, setFromDate] = useState<Date | undefined>(undefined)
+  const [toDate, setToDate] = useState<Date | undefined>(undefined)
   const [allCouriers, setAllCouriers] = useState<Courier[]>([])
   const [searchResults, setSearchResults] = useState<Courier[]>([])
   const [selectedCouriers, setSelectedCouriers] = useState<string[]>([])
@@ -877,7 +878,7 @@ export default function BulkPODPage() {
     const fetchCouriers = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch("/api/getData")
+        const response = await fetch("/api/getData?status=1")
         const data = await response.json()
         console.log("Response:", data)
 
@@ -932,40 +933,42 @@ export default function BulkPODPage() {
     }
   }
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     setIsSearching(true)
     setSelectedCouriers([])
 
-    // Filter couriers based on search criteria
-    let results = [...allCouriers]
-
-    // Filter by customer name if provided
-    if (searchTerm) {
-      results = results.filter((courier) => {
-        const parsedData = typeof courier.data === "string" ? JSON.parse(courier.data) : courier.data
-      console.log("Parsed Data:", parsedData);
-        return parsedData.fromAddress.name.toLowerCase().includes(searchTerm.toLowerCase())
+    try {
+      const searchType = searchTerm.trim() ? "name" : "date"
+      const params = new URLSearchParams({
+        status: "1",
+        searchtype: searchType,
+        name: searchTerm.trim(),
+        fromdate: fromDate ? format(fromDate, "yyyy-MM-dd") : "",
+        todate: toDate ? format(toDate, "yyyy-MM-dd") : "",
       })
-    }
 
-    // Filter by date if selected
-    if (date) {
-      const dateStr = format(date, "yyyy-MM-dd")
-      results = results.filter((courier) => {
-        // Extract date part from date_time field
-        const courierDate = courier.date_time.split(" ")[0]
-        return courierDate === dateStr
-      })
-    }
+      const response = await fetch(`/api/getData?${params.toString()}`)
+      const data = await response.json()
 
-    setSearchResults(results)
-    setIsSearching(false)
+      const results = data?.data ?? []
+      setAllCouriers(results)
+      setSearchResults(results)
 
-    if (results.length === 0) {
+      if (results.length === 0) {
+        toast({
+          title: "No results found",
+          description: "Try adjusting your search criteria",
+        })
+      }
+    } catch (error) {
+      console.error("Error searching couriers:", error)
       toast({
-        title: "No results found",
-        description: "Try adjusting your search criteria",
+        title: "Search error",
+        description: "Failed to fetch courier data. Please try again.",
+        variant: "destructive",
       })
+    } finally {
+      setIsSearching(false)
     }
   }
 
@@ -1010,20 +1013,22 @@ export default function BulkPODPage() {
       for (const courierId of selectedCouriers) {
         const courier = searchResults.find((c) => c.id.toString() === courierId)
         if (courier && podRefs.current[courierId]) {
+          const element = podRefs.current[courierId]!
+
           // Add a small delay to ensure the element is fully rendered
           await new Promise((resolve) => setTimeout(resolve, 100))
-          const canvas = await html2canvas(podRefs.current[courierId]!, {
+          const canvas = await html2canvas(element, {
             scale: 2,
-            logging: true, // Enable logging for debugging
+            logging: false,
             useCORS: true,
             allowTaint: true,
             backgroundColor: "#ffffff",
-            width: 800, // Set explicit width
-            height: podRefs.current[courierId]!.offsetHeight,
-            onclone: (document, element) => {
-              // Make sure the element is visible in the cloned document
-              element.style.visibility = "visible"
-              element.style.opacity = "1"
+            width: element.scrollWidth,
+            height: element.scrollHeight,
+            onclone: (_document, cloneElement) => {
+              cloneElement.style.visibility = "visible"
+              cloneElement.style.opacity = "1"
+              cloneElement.style.overflow = "hidden"
             },
           })
 
@@ -1119,9 +1124,9 @@ export default function BulkPODPage() {
           <CardDescription>Search for confirmed couriers by client name and/or booking date</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-4">
             <div className="space-y-2 relative">
-              <Label htmlFor="clientName">Client Name</Label>
+              <Label htmlFor="clientName">Name</Label>
               <Input
                 id="clientName"
                 placeholder="Enter client name"
@@ -1138,15 +1143,16 @@ export default function BulkPODPage() {
                   // Delay hiding suggestions to allow for clicks
                   setTimeout(() => setShowSuggestions(false), 200)
                 }}
+                className="h-11"
               />
               {showSuggestions && (
-                <div className="absolute z-10 w-full mt-1  border rounded-md shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-10 w-full mt-1 border rounded-md shadow-lg max-h-60 overflow-auto bg-slate-900">
                   {suggestions
                     .filter((suggestion) => suggestion.toLowerCase().includes(searchTerm.toLowerCase()))
                     .map((suggestion, index) => (
                       <div
                         key={index}
-                        className="px-4 py-2 hover:bg-gray-500 cursor-pointer"
+                        className="px-4 py-2 hover:bg-slate-100 cursor-pointer"
                         onClick={() => {
                           setSearchTerm(suggestion)
                           setShowSuggestions(false)
@@ -1158,27 +1164,41 @@ export default function BulkPODPage() {
                 </div>
               )}
             </div>
-          
+
             <div className="space-y-2">
-              <Label>Booking Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : "Select date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
-                </PopoverContent>
-              </Popover>
+              <Label>From</Label>
+              <div className="relative">
+                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <CalendarIcon className="h-4 w-4 text-slate-500" />
+                </div>
+                <input
+                  type="date"
+                  value={fromDate ? format(fromDate, "yyyy-MM-dd") : ""}
+                  onChange={(e) => setFromDate(e.target.value ? new Date(e.target.value) : undefined)}
+                  className="flex h-11 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  placeholder="Select from date"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>To</Label>
+              <div className="relative">
+                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <CalendarIcon className="h-4 w-4 text-slate-500" />
+                </div>
+                <input
+                  type="date"
+                  value={toDate ? format(toDate, "yyyy-MM-dd") : ""}
+                  onChange={(e) => setToDate(e.target.value ? new Date(e.target.value) : undefined)}
+                  className="flex h-11 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  placeholder="Select to date"
+                />
+              </div>
             </div>
 
             <div className="flex items-end">
-              <Button className="w-full" onClick={handleSearch} disabled={isSearching}>
+              <Button className="w-full h-11" onClick={handleSearch} disabled={isSearching}>
                 {isSearching ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1275,19 +1295,23 @@ export default function BulkPODPage() {
         <div className="fixed left-[-9999px] top-[-9999px] opacity-100 pointer-events-none" aria-hidden="true">
         {searchResults
           .filter((courier) => selectedCouriers.includes(courier.id.toString()))
-          .map((courier) => (
-            <div
-              key={courier.id}
-              ref={(el) => {
-                podRefs.current[courier.id] = el;
-              }}
-              className="bg-white w-[800px] h-auto"
-            >
-              <PODTemplate
-                courier={courier} // Ensure the correct type is passed
-              />
-            </div>
-          ))}
+          .map((courier) => {
+            const parsedData = typeof courier.data === "string" ? JSON.parse(courier.data) : courier.data
+            return (
+              <div
+                key={courier.id}
+                ref={(el) => {
+                  podRefs.current[courier.id] = el;
+                }}
+                className="bg-white w-[396px] h-[550px] "
+              >
+                <InvoiceTemplate
+                  formData={parsedData}
+                  shortCode={parsedData.shortTrackingId || parsedData.trackingId || courier.id.toString()}
+                />
+              </div>
+            )
+          })}
       </div>
 
       {/* Preview Dialog */}
@@ -1304,7 +1328,15 @@ export default function BulkPODPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 overflow-auto max-h-[70vh]">
-            {previewCourier && <PODTemplate courier={previewCourier} />}
+            {previewCourier && (() => {
+              const parsedData = typeof previewCourier.data === "string" ? JSON.parse(previewCourier.data) : previewCourier.data
+              return (
+                <InvoiceTemplate
+                  formData={parsedData}
+                  shortCode={parsedData.shortTrackingId || parsedData.trackingId || previewCourier.id.toString()}
+                />
+              )
+            })()}
           </div>
         </DialogContent>
       </Dialog>
